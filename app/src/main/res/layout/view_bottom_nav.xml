@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bottom nav de 5 pestañas (solo navegación entre Activities existentes) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomNav"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/background"
+    android:elevation="8dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <LinearLayout android:id="@+id/tabHome"
+        style="@style/NavTab"
+        android:orientation="vertical">
+        <ImageView android:id="@+id/ivHome"
+            android:layout_width="24dp" android:layout_height="24dp"
+            android:src="@drawable/ic_home" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/lblHome"
+            style="@style/NavLabel" android:text="@string/nav_home" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/tabConsole"
+        style="@style/NavTab"
+        android:orientation="vertical">
+        <ImageView android:id="@+id/ivConsole"
+            android:layout_width="24dp" android:layout_height="24dp"
+            android:src="@drawable/ic_console" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/lblConsole"
+            style="@style/NavLabel" android:text="@string/nav_console" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/tabMods"
+        style="@style/NavTab"
+        android:orientation="vertical">
+        <ImageView android:id="@+id/ivMods"
+            android:layout_width="24dp" android:layout_height="24dp"
+            android:src="@drawable/ic_mods" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/lblMods"
+            style="@style/NavLabel" android:text="@string/nav_mods" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/tabWorlds"
+        style="@style/NavTab"
+        android:orientation="vertical">
+        <ImageView android:id="@+id/ivWorlds"
+            android:layout_width="24dp" android:layout_height="24dp"
+            android:src="@drawable/ic_worlds" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/lblWorlds"
+            style="@style/NavLabel" android:text="@string/nav_worlds" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/tabSettings"
+        style="@style/NavTab"
+        android:orientation="vertical">
+        <ImageView android:id="@+id/ivSettings"
+            android:layout_width="24dp" android:layout_height="24dp"
+            android:src="@drawable/ic_settings" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/lblSettings"
+            style="@style/NavLabel" android:text="@string/nav_settings" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inicio — panel del servidor (estilo prototipo home.html, GitHub/Primer) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/canvas">
+
+    <include android:id="@+id/header" layout="@layout/view_header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- ===== Tarjeta: Servidor ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <View
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_box" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/server_title"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:id="@+id/tvServerAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:textSize="11sp"
+                            android:textColor="@color/on_surface_secondary"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/pillStatus"
+                        style="@style/Pill"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/status_stopped" />
+                </LinearLayout>
+
+                <!-- Iniciar / Detener -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnStart"
+                        style="@style/BtnGreen"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="6dp"
+                        android:text="@string/start" />
+
+                    <Button
+                        android:id="@+id/btnStop"
+                        style="@style/BtnDanger"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="6dp"
+                        android:text="@string/stop" />
+                </LinearLayout>
+
+                <!-- Tiempo activo -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/uptime_label"
+                        android:textSize="13sp"
+                        android:textColor="@color/on_surface_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvUptime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="—"
+                        android:textSize="13sp"
+                        android:textColor="@color/on_surface" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== Tarjeta: Monitor de recursos ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_panel_header"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="@style/PanelTitle"
+                        android:text="@string/monitor_title" />
+
+                    <TextView
+                        android:id="@+id/tvTps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="TPS —"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface_secondary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <!-- CPU -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="CPU"
+                            android:textSize="13sp"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:id="@+id/tvCpuVal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:text="0 %"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/on_surface" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/pbCpu"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:layout_marginTop="6dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/bg_progress_bar" />
+
+                    <!-- RAM -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/ram_label"
+                            android:textSize="13sp"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:id="@+id/tvRamVal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:text="0 / 0 MB"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/on_surface" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/pbRam"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:layout_marginTop="6dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/bg_progress_bar" />
+
+                    <!-- JUGADORES / VERSION -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:orientation="vertical"
+                            android:background="@drawable/bg_icon_box"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/label_players"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/on_surface_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvPlayers"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:fontFamily="monospace"
+                                android:text="0/10"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/on_surface" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/players_online"
+                                android:textSize="10sp"
+                                android:textColor="@color/on_surface_secondary" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:orientation="vertical"
+                            android:background="@drawable/bg_icon_box"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/label_version"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/on_surface_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvVersion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:fontFamily="monospace"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/on_surface" />
+
+                            <TextView
+                                android:id="@+id/tvFlavor"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="10sp"
+                                android:textColor="@color/on_surface_secondary" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== Tarjeta: Túnel playit.gg (tap = copiar URL) ===== -->
+            <LinearLayout
+                android:id="@+id/playitStatusView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="@style/PanelTitle"
+                        android:text="@string/tunnel_panel" />
+
+                    <TextView
+                        android:id="@+id/pillTunnel"
+                        style="@style/Pill"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="—" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvTunnelAddr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:textSize="12sp"
+                    android:textColor="@color/accent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/tunnel_note"
+                    android:textSize="10sp"
+                    android:textColor="@color/on_surface_secondary" />
+            </LinearLayout>
+
+            <!-- ===== Selector de versión / sabor ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/PanelTitle"
+                    android:text="@string/version_prompt" />
+
+                <Spinner
+                    android:id="@+id/spinnerVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_btn_secondary"
+                    android:paddingStart="10dp" />
+
+                <RadioGroup
+                                    android:id="@+id/flavorGroup"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:orientation="horizontal">
+
+                                    <RadioButton
+                                        android:id="@+id/rbVanilla"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:text="Vanilla"
+                                        android:checked="true"
+                                        android:button="@drawable/radio_github"
+                                        android:paddingStart="6dp"
+                                        android:minHeight="36dp"
+                                        android:textColor="@color/on_surface"
+                                        android:textSize="14sp" />
+
+                                    <RadioButton
+                                        android:id="@+id/rbFabric"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:text="Fabric"
+                                        android:button="@drawable/radio_github"
+                                        android:paddingStart="6dp"
+                                        android:minHeight="36dp"
+                                        android:textColor="@color/on_surface"
+                                        android:textSize="14sp" />
+                                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnInstall"
+                        style="@style/BtnSecondary"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="6dp"
+                        android:text="@string/install" />
+
+                    <Button
+                        android:id="@+id/btnResources"
+                        style="@style/BtnSecondary"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="6dp"
+                        android:text="@string/btn_resources" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnDeleteServer"
+                    style="@style/BtnDanger"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/btn_delete_server" />
+            </LinearLayout>
+
+            <!-- ===== Log tail ===== -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="6dp"
+                style="@style/PanelTitle"
+                android:text="@string/panel_logtail" />
+
+            <TextView
+                android:id="@+id/logView"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:background="@drawable/bg_terminal_input"
+                android:padding="10dp"
+                android:fontFamily="monospace"
+                android:textSize="10sp"
+                android:textIsSelectable="true"
+                android:textColor="@color/terminal_text" />
+
+            <Button
+                android:id="@+id/btnExportLogs"
+                style="@style/BtnSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="@string/btn_export_logs" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/note"
+                android:textSize="10sp"
+                android:textColor="@color/on_surface_secondary" />
+        </LinearLayout>
+    </ScrollView>
+
+    <include android:id="@+id/nav" layout="@layout/view_bottom_nav" />
+</LinearLayout>

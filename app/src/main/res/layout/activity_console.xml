@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Consola — terminal oscuro + chips de comandos rapidos (estilo prototipo console.html) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/canvas">
+
+    <include android:id="@+id/header" layout="@layout/view_header" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Terminal -->
+        <ScrollView
+            android:id="@+id/scrollTerminal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_terminal_input"
+            android:fillViewport="true">
+
+            <TextView
+                android:id="@+id/tvTerminal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:textColor="@color/terminal_text"
+                android:textIsSelectable="true"
+                android:lineSpacingExtra="3dp" />
+        </ScrollView>
+
+        <!-- Chips de comandos rapidos (mismos comandos que ya existian) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/quick_cmds"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="@color/on_surface_secondary" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button android:id="@+id/chipList" style="@style/BtnChip"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="list" />
+                    <Button android:id="@+id/chipTps" style="@style/BtnChip"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="tps" />
+                    <Button android:id="@+id/chipSave" style="@style/BtnChip"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="save-all" />
+                    <Button android:id="@+id/chipDay" style="@style/BtnChip"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="time set day" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <Button android:id="@+id/chipWeather" style="@style/BtnChip"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="weather clear" />
+                    <Button android:id="@+id/chipHelp" style="@style/BtnChip"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="help" />
+                    <Button android:id="@+id/chipStop" style="@style/BtnChip"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="@color/danger"
+                        android:text="stop" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Input de comandos -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_terminal_input"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:fontFamily="monospace"
+                android:text=">_"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/terminal_muted" />
+
+            <EditText
+                android:id="@+id/cmdInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="@null"
+                android:hint="@string/console_hint"
+                android:fontFamily="monospace"
+                android:textSize="13sp"
+                android:textColor="@color/terminal_text"
+                android:textColorHint="@color/terminal_muted"
+                android:imeOptions="actionSend"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/btnSend"
+                android:layout_width="44dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_btn_send"
+                android:text=">"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_primary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <include android:id="@+id/nav" layout="@layout/view_bottom_nav" />
+</LinearLayout>

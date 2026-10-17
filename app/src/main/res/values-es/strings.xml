@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Minicraft</string>
+    <string name="version_prompt">Selecciona la versión</string>
+    <string name="install">Instalar</string>
+    <string name="start">Iniciar</string>
+    <string name="stop">Detener</string>
+    <string name="load_mods">📁 Cargar mods</string>
+    <string name="send">Enviar</string>
+    <string name="console_hint">list, say hola, whitelist on, stop…</string>
+    <string name="note">Toca Instalar si la versión aún no está descargada (~50–120 MB). Reinicia el servidor para aplicar los mods.</string>
+    <string name="server_config_title">Configuración del servidor</string>
+    <string name="world_manager_title">Mundos</string>
+    <string name="resource_monitor_title">Monitor de recursos</string>
+    <string name="server_settings_title">Ajustes del servidor</string>
+    <string name="btn_worlds">📁 Mundos</string>
+    <string name="btn_resources">📊 Recursos</string>
+    <string name="btn_settings">⚙ Ajustes</string>
+    <string name="btn_console">Consola</string>
+    <string name="btn_mods">Mods</string>
+    <string name="btn_install_srv">Instalar / cambiar</string>
+    <string name="panel_server">Servidor</string>
+    <string name="panel_resources">Monitor de recursos</string>
+    <string name="panel_tunnel">Conexión playit.gg</string>
+    <string name="panel_players">Jugadores en línea</string>
+    <string name="panel_quicklinks">Accesos rápidos</string>
+    <string name="panel_logtail">Consola (últimas líneas)</string>
+    <string name="btn_start">Iniciar</string>
+    <string name="btn_stop">Detener</string>
+    <string name="tunnel_copy">Copiar dirección</string>
+    <string name="tunnel_note">Los amigos se conectan a la dirección del túnel sin abrir puertos en el router.</string>
+    <string name="settings_title">Ajustes del servidor</string>
+    <string name="settings_general">General</string>
+    <string name="settings_gameplay">Juego</string>
+    <string name="settings_playit">playit.gg</string>
+    <string name="settings_motd">MOTD</string>
+    <string name="settings_ram">RAM del servidor</string>
+    <string name="settings_difficulty">Dificultad</string>
+    <string name="settings_gamemode">Modo de juego</string>
+    <string name="settings_viewdistance">Distancia de renderizado</string>
+    <string name="settings_pvp">PvP</string>
+    <string name="settings_whitelist">Lista blanca</string>
+    <string name="settings_onlinemode">Cuentas originales</string>
+    <string name="settings_flight">Permitir volar</string>
+    <string name="settings_save">Guardar y aplicar</string>
+    <string name="settings_undo">Deshacer</string>
+    <string name="settings_dirty_note">Hay cambios sin guardar.</string>
+    <string name="settings_ram_recommended">Recomendado: 4 GB</string>
+    <string name="worlds_active">Mundo activo</string>
+    <string name="worlds_all">Todos los mundos</string>
+    <string name="worlds_backups">Copias de seguridad</string>
+    <string name="worlds_btn_new">Crear</string>
+    <string name="worlds_btn_backup">Crear copia ahora</string>
+    <string name="worlds_confirm_restart">¿Reiniciar el servidor?</string>
+    <string name="worlds_action_activate">Activar</string>
+    <string name="worlds_action_rename">Renombrar</string>
+    <string name="worlds_action_delete">Eliminar</string>
+    <string name="worlds_action_restore">Restaurar</string>
+    <string name="worlds_action_export">Exportar</string>
+    <string name="worlds_dialog_new_title">Crear mundo</string>
+    <string name="worlds_dialog_rename_title">Renombrar mundo</string>
+    <string name="worlds_label_name">Nombre (level_name)</string>
+    <string name="worlds_label_mode">Modo de juego</string>
+    <string name="worlds_cancel">Cancelar</string>
+    <string name="worlds_create">Crear</string>
+    <string name="worlds_save">Guardar</string>
+    <string name="worlds_status_loaded">cargado</string>
+    <string name="worlds_empty_active">ningún mundo activo</string>
+    <string name="worlds_no_players">Nadie conectado todavía.</string>
+    <string name="worlds_backup_date">· último acceso</string>
+
+    <!-- ===== Navegación y UI refinada ===== -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_console">Consola</string>
+    <string name="nav_mods">Mods</string>
+    <string name="nav_worlds">Mundos</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="subtitle_home">panel del servidor</string>
+    <string name="subtitle_console">logs y terminal</string>
+    <string name="subtitle_mods">gestión de mods</string>
+    <string name="subtitle_worlds">gestión de mundos</string>
+    <string name="subtitle_settings">server.properties</string>
+    <string name="server_title">Servidor Minicraft</string>
+    <string name="status_stopped">DETENIDO</string>
+    <string name="status_online">EN LÍNEA</string>
+    <string name="status_starting">ARRANCANDO</string>
+    <string name="uptime_label">Tiempo activo</string>
+    <string name="monitor_title">Monitor de recursos</string>
+    <string name="ram_label">RAM asignada</string>
+    <string name="players_online">en línea</string>
+    <string name="quick_cmds">Comandos rápidos</string>
+    <string name="console_empty">— consola vacía; inicia el servidor en Inicio —</string>
+    <string name="mods_installed">Mods instalados</string>
+    <string name="mods_note">Los cambios se aplican al reiniciar el servidor.</string>
+    <string name="world_active">Mundo activo</string>
+    <string name="world_all">Todos los mundos</string>
+    <string name="world_backups">Copias de seguridad</string>
+    <string name="tunnel_panel">Conexión playit.gg</string>
+
+    <!-- ===== Inicio ===== -->
+    <string name="label_players">JUGADORES</string>
+    <string name="label_version">VERSIÓN</string>
+    <string name="btn_delete_server">Borrar servidor seleccionado</string>
+    <string name="btn_export_logs">Exportar logs</string>
+
+    <!-- ===== Mods ===== -->
+    <string name="mods_filter_hint">Filtrar por nombre…</string>
+    <string name="mods_sort_name">Nombre</string>
+    <string name="mods_sort_date">Fecha</string>
+    <string name="mods_show_disabled">Ver off</string>
+
+    <!-- ===== Monitor de recursos ===== -->
+    <string name="monitor_pid">PID del servidor: —</string>
+    <string name="monitor_cpu">CPU: —</string>
+    <string name="monitor_mem">Memoria: —</string>
+    <string name="monitor_temp">Temperatura: —</string>
+
+    <!-- ===== Ajustes del servidor ===== -->
+    <string name="settings_motd_desc">Mensaje en la lista de servidores</string>
+    <string name="settings_port">Puerto</string>
+    <string name="settings_ram_desc">máximo del heap de Java</string>
+    <string name="settings_presets">Presets de rendimiento</string>
+    <string name="settings_presets_desc">Aplica valores recomendados de RAM, view-distance y simulation-distance de un toque.</string>
+    <string name="settings_preset_battery">Batería</string>
+    <string name="settings_preset_balanced">Equilibrado</string>
+    <string name="settings_preset_max">Máximo</string>
+    <string name="settings_preset_current">Actual: %1$s</string>
+    <string name="settings_preset_custom_default">Actual: personalizado</string>
+    <string name="settings_simdistance">Distancia de simulación</string>
+    <string name="settings_tunnel_domain">Dominio del túnel</string>
+    <string name="settings_tunnel_domain_desc">dirección pública para tus amigos</string>
+
+    <!-- ===== Interruptor de idioma (Ajustes, panel superior) ===== -->
+    <string name="lang_title">Idioma</string>
+    <string name="lang_desc">Idioma de la app. Los cambios se aplican al instante.</string>
+    <string name="lang_es">Español</string>
+    <string name="lang_en">English</string>
+
+    <!-- ===== Mundos ===== -->
+    <string name="world_loaded">CARGADO</string>
+    <string name="worlds_empty">Sin mundos detectados en worlds/</string>
+
+    <!-- ===== Hoja Modrinth ===== -->
+    <string name="modrinth_title">Descargar desde Modrinth</string>
+    <string name="modrinth_search_hint">Buscar mods…</string>
+    <string name="modrinth_search">Buscar</string>
+    <string name="modrinth_env">Entorno:</string>
+    <string name="modrinth_env_all">Todos</string>
+    <string name="modrinth_env_server">Servidor</string>
+    <string name="modrinth_env_client">Cliente</string>
+    <string name="modrinth_env_both">Ambos</string>
+    <string name="modrinth_sort">Orden:</string>
+    <string name="modrinth_sort_relevance">Relevancia</string>
+    <string name="modrinth_sort_downloads">Descargas</string>
+    <string name="modrinth_sort_new">Nuevos</string>
+    <string name="modrinth_sort_updated">Actualizados</string>
+    <string name="modrinth_loading">Cargando mods populares…</string>
+    <string name="modrinth_download">Bajar</string>
+
+    <!-- ===== Diálogo de configuración del servidor ===== -->
+    <string name="cfg_ram">RAM asignada al server</string>
+    <string name="cfg_cpu_cores">Núcleos de CPU</string>
+    <string name="cfg_threads_hint">0 = auto (todos menos 1)</string>
+    <string name="cfg_distance_mode">Modo de optimización (distancia de chunks)</string>
+    <string name="cfg_preset_low_latency">Baja latencia (view=6, sim=4) — menos chunks, menos lag</string>
+    <string name="cfg_preset_balanced">Equilibrado (view=8, sim=6) — visión media</string>
+    <string name="cfg_preset_high_view">Alta visión (view=10, sim=8) — más chunks, más CPU</string>
+    <string name="cfg_preset_custom">Personalizado</string>
+    <string name="cfg_view_hint">Distancia de vista</string>
+    <string name="cfg_sim_hint">Distancia de sim</string>
+    <string name="cfg_port">Puerto del servidor</string>
+    <string name="cfg_expose">Exponer a internet (playit.gg)</string>
+
+    <!-- ===== Diagnóstico / manifest ===== -->
+    <string name="diag_title">Diagnóstico</string>
+    <string name="diag_server_test">Prueba servidor</string>
+    <string name="diag_screen_off_test">Prueba pantalla off</string>
+    <string name="fgs_subtype">Ejecuta un servidor de Minecraft local mientras el usuario no está mirando la pantalla</string>
+
+    <!-- ===== MainActivity ===== -->
+    <string name="status_connecting">CONECTANDO</string>
+    <string name="no_address">(sin dirección)</string>
+    <string name="no_wifi">(sin Wi-Fi)</string>
+    <string name="addr_port">puerto 25565</string>
+    <string name="addr_not_installed">sin instalar</string>
+    <string name="players_count">%1$s jugadores</string>
+    <string name="installing">Instalando…</string>
+    <string name="log_ok">OK</string>
+    <string name="log_fail">FALLO</string>
+    <string name="console_jre_missing">No encuentro la JRE en files/jre. Sin ella no arranca nada.</string>
+    <string name="msg_already_installed">OK %1$s %2$s ya está instalado.</string>
+    <string name="msg_installing">Instalando %1$s %2$s… (la primera vez baja bastante)</string>
+    <string name="msg_result_ok">OK %1$s</string>
+    <string name="msg_result_fail">FALLO %1$s</string>
+    <string name="msg_not_installed_console">FALLO %1$s %2$s no está instalado. Pulsa Instalar primero.</string>
+    <string name="msg_not_installed_toast">La versión %1$s (%2$s) no está instalada. Pulsa INSTALAR primero.</string>
+    <string name="msg_starting">Arrancando %1$s %2$s…</string>
+    <string name="msg_stop_before_delete">Detén el servidor antes de borrarlo</string>
+    <string name="msg_not_installed">%1$s %2$s no está instalado</string>
+    <string name="dialog_delete_title">Borrar servidor</string>
+    <string name="dialog_delete_message">¿Eliminar %1$s %2$s por completo?\n\nSe borrará %3$s/ incluyendo mundos, mods y configuración. No se puede deshacer.</string>
+    <string name="dialog_delete_confirm">Borrar</string>
+    <string name="msg_server_deleted">Servidor borrado</string>
+    <string name="msg_delete_failed">No se pudo borrar</string>
+    <string name="msg_no_file_picker">No hay selector de archivos disponible</string>
+    <string name="msg_mods_copied_console">OK %1$s mod(s) copiados a %2$s/. Reinicia el servidor para aplicarlos.</string>
+    <string name="msg_mods_copied_toast">%1$s mod(s) cargados en %2$s/</string>
+    <string name="msg_no_mods">FALLO No se copió ningún mod.</string>
+    <string name="msg_log_empty">El log está vacío</string>
+    <string name="msg_export_log">Exportar log</string>
+    <string name="msg_no_tunnel_yet">Sin dirección de túnel todavía</string>
+    <string name="msg_url_copied">URL copiada: %1$s</string>
+
+    <!-- ===== ConsoleActivity ===== -->
+    <string name="console_send_failed">✗ no se pudo enviar: %1$s (¿servidor parado?)</string>
+    <string name="console_not_running">El servidor no está corriendo</string>
+
+    <!-- ===== ModManagerActivity ===== -->
+    <string name="mods_loader_info">Fabric 1.21.1 — %1$d activos de %2$d — %3$d cargados en el último arranque</string>
+    <string name="mods_loader_info_noboot">Fabric 1.21.1 — %1$d activos de %2$d — (el servidor no ha arrancado con estos mods)</string>
+    <string name="mods_fabric_missing">Fabric no instalado — instala el servidor desde Inicio</string>
+    <string name="mods_count">%1$d mods (%2$d activos)</string>
+    <string name="mods_add_title">Agregar mods</string>
+    <string name="mods_add_modrinth">Descargar desde Modrinth</string>
+    <string name="mods_add_import">Importar desde archivos</string>
+    <string name="mods_imported_toast">%1$d mod(s) importados</string>
+    <string name="mods_imported_console">OK %1$d mod(s) importados a mods/. Reinicia el servidor para aplicarlos.</string>
+    <string name="mods_import_none">No se importó ningún mod</string>
+    <string name="modrinth_loading_mods">Cargando mods…</string>
+    <string name="modrinth_searching">Buscando “%1$s”…</string>
+    <string name="modrinth_no_results">Sin resultados</string>
+    <string name="modrinth_results_end">%1$d resultados (fin)</string>
+    <string name="modrinth_results_more">%1$d resultados — desliza para ver más</string>
+    <string name="modrinth_network_error">Error de red: %1$s</string>
+    <string name="modrinth_downloading">Descargando %1$s…</string>
+    <string name="modrinth_installed_status">Instalado: %1$s</string>
+    <string name="modrinth_installed_toast">%1$s instalado</string>
+    <string name="modrinth_dl_ok_console">OK mod descargado de Modrinth: %1$s (%2$s MB)</string>
+    <string name="modrinth_error">Error: %1$s</string>
+    <string name="modrinth_fail_toast">Fallo: %1$s</string>
+    <string name="modrinth_result_meta">%1$.1fM descargas - %2$s - %3$s</string>
+    <string name="mod_source_imported">Importado</string>
+    <string name="mods_toggle_failed">No se pudo cambiar</string>
+    <string name="mod_enabled_console">Mod activado: %1$s (se aplica al reiniciar)</string>
+    <string name="mod_disabled_console">Mod desactivado: %1$s (se aplica al reiniciar)</string>
+    <string name="env_both">servidor+cliente</string>
+    <string name="env_server">servidor</string>
+    <string name="env_client">cliente</string>
+
+    <!-- ===== WorldManager ===== -->
+    <string name="worlds_count">%1$d mundos</string>
+    <string name="world_meta">%1$.0f MB · último acceso %2$s</string>
+    <string name="world_active_prefix">ACTIVO · </string>
+    <string name="msg_no_picker">No hay selector: %1$s</string>
+    <string name="dialog_delete_world_title">Eliminar mundo</string>
+    <string name="dialog_delete_world_message">¿Borrar “%1$s”? No se puede deshacer.</string>
+    <string name="msg_world_deleted">Mundo borrado: %1$s</string>
+    <string name="msg_world_imported">Mundo importado: %1$s</string>
+    <string name="msg_world_exported">Mundo exportado: %1$s</string>
+    <string name="msg_zip_invalid">El ZIP no contiene un mundo válido</string>
+
+    <!-- ===== ServerSettingsActivity ===== -->
+    <string name="tunnel_requires_active">— (requiere túnel activo)</string>
+    <string name="msg_saved">Guardado: heap %1$d MB, view=%2$d, sim=%3$d</string>
+    <string name="console_props_updated">server.properties actualizado (view=%1$d, sim=%2$d; se aplica al reiniciar)</string>
+    <string name="preset_battery_desc">Batería: heap 1 GB, view 6, sim 4. Máximo ahorro.</string>
+    <string name="preset_max_desc">Máximo: heap 4 GB, view 16, sim 12. Requiere RAM.</string>
+    <string name="preset_balanced_desc">Equilibrado: heap 2 GB, view 10, sim 8. Recomendado.</string>
+    <string name="preset_selected">Preset seleccionado: %1$s (pulsa Guardar para aplicarlo)</string>
+    <string name="diff_peaceful">Pacífico</string>
+    <string name="diff_easy">Fácil</string>
+    <string name="diff_normal">Normal</string>
+    <string name="diff_hard">Difícil</string>
+    <string name="gm_survival">Supervivencia</string>
+    <string name="gm_creative">Creativo</string>
+    <string name="gm_adventure">Aventura</string>
+
+    <!-- ===== MinecraftService (notificaciones) ===== -->
+    <string name="notif_channel">Servidor Minecraft</string>
+    <string name="notif_channel_desc">Servidor de Minecraft en ejecución</string>
+    <string name="notif_title_active">Minicraft — servidor activo</string>
+    <string name="notif_text_running">El servidor sigue corriendo con la pantalla apagada</string>
+    <string name="notif_action_stop">Detener</string>
+    <string name="notif_installing">Instalando servidor…</string>
+    <string name="notif_install_server_first">Instala el servidor primero</string>
+    <string name="notif_ready">Servidor listo en %1$ss</string>
+    <string name="notif_stopped">Servidor detenido (%1$d)</string>
+    <string name="notif_error">Error: %1$s</string>
+    <string name="msg_server_not_installed_console">%1$s %2$s no está instalado; pulsa Instalar primero</string>
+
+    <!-- ===== ServerProvisioner ===== -->
+    <string name="inst_read_manifest">1/3 leyendo el manifiesto de Mojang…</string>
+    <string name="inst_no_manifest">no se pudo leer el manifiesto</string>
+    <string name="inst_version_not_in_manifest">la versión %1$s no está en el manifiesto</string>
+    <string name="inst_dl_version_json">2/3 descargando el JSON de la versión…</string>
+    <string name="inst_no_version_json">no se pudo leer el JSON de %1$s</string>
+    <string name="inst_no_server_url">el JSON no trae la URL de server.jar</string>
+    <string name="inst_dl_server_jar">3/3 descargando server.jar…</string>
+    <string name="inst_fail_server_jar">falló la descarga de server.jar</string>
+    <string name="inst_vanilla_ok">Vanilla %1$s instalado en %2$s</string>
+    <string name="inst_fabric_step1">1/4 server.jar vanilla…</string>
+    <string name="inst_no_vanilla_jar">no se pudo traer el server.jar vanilla de %1$s</string>
+    <string name="inst_fabric_step2">2/4 consultando meta.fabricmc.net…</string>
+    <string name="inst_no_loader">no se pudo obtener el loader de Fabric para %1$s</string>
+    <string name="inst_no_installer">no se pudo obtener el instalador de Fabric</string>
+    <string name="inst_fabric_step3">3/4 descargando el instalador…</string>
+    <string name="inst_fail_installer">falló la descarga del instalador</string>
+    <string name="inst_fabric_step4">4/4 ejecutando el instalador (esto tarda)…</string>
+    <string name="inst_no_stub">falta el stub de la JVM en nativeLibraryDir</string>
+    <string name="inst_installer_rc">el instalador devolvió %1$d</string>
+    <string name="inst_no_launch_jar">el instalador no creó fabric-server-launch.jar</string>
+    <string name="inst_fabric_ok">Fabric %1$s instalado en %2$s</string>
+    <string name="inst_wrote_eula">escrito eula.txt</string>
+    <string name="inst_wrote_props">escrito server.properties (LAN: online-mode=false)</string>
+    <string name="inst_jar_already">server.jar ya está ahí (%1$d MB)</string>
+    <string name="inst_read_manifest_short">no se pudo leer el manifiesto</string>
+
+    <!-- ===== JreProvisioner ===== -->
+    <string name="jre_incomplete">JRE incompleta de una corrida anterior; se reinstala</string>
+    <string name="jre_already_downloaded">%1$s ya estaba descargado (%2$d MB)</string>
+    <string name="jre_downloading">descargando %1$s…</string>
+    <string name="jre_download_failed">no se pudo descargar %1$s (¿sin conexión?)</string>
+    <string name="jre_download_complete">descarga completa (%1$d MB)</string>
+    <string name="jre_extracting">extrayendo la JRE de openjdk-21 (243 MB, tarda)…</string>
+    <string name="jre_extracted_files">%1$d archivos extraídos…</string>
+    <string name="jre_extracted_done">JRE extraída: %1$d archivos</string>
+    <string name="jre_no_data_tar">no se encontró data.tar en %1$s</string>
+    <string name="jre_extract_lib">extrayendo %1$s…</string>
+    <string name="jre_no_entry">no se encontró %1$s en %2$s</string>
+    <string name="jre_applying_perms">aplicando permisos…</string>
+    <string name="jre_chmod_failed">⚠ %1$d chmod fallidos</string>
+    <string name="jre_incomplete_missing">la JRE quedó incompleta: faltan %1$s</string>
+    <string name="jre_complete">✓ JRE completa (%1$d archivos)</string>
+    <string name="jre_downloading_pct">%1$s: %2$d%% (%3$d MB)</string>
+
+    <!-- ===== PlayitAgent ===== -->
+    <string name="tunnel_err_not_configured">El túnel no está configurado en playit.gg</string>
+    <string name="tunnel_err_connecting">Esperando que el daemon se conecte…</string>
+    <string name="tunnel_err_disabled">Túnel deshabilitado</string>
+
+    <!-- ===== ResourceMonitor ===== -->
+    <string name="monitor_pid_not_running">PID del servidor: (no corre)</string>
+    <string name="monitor_pid_value">PID del servidor: %1$d</string>
+    <string name="monitor_cpu_off">CPU: (servidor apagado)</string>
+    <string name="monitor_mem_off">Memoria: (servidor apagado)</string>
+    <string name="monitor_mem_value">Memoria: %1$.0f MB de %2$d MB</string>
+
+    <!-- ===== ServerConfigSheet ===== -->
+    <string name="cfg_invalid_port">Puerto inválido: %1$s</string>
+    <string name="cfg_no_version">sin versión para Fabric 1.21.1</string>
+
+    <!-- ===== LockProbe / Diagnóstico ===== -->
+    <string name="lock_label_filesdir">filesDir (interno)</string>
+    <string name="lock_label_external_app">externalFilesDir (externo app)</string>
+    <string name="lock_label_external_dirs">getExternalFilesDirs()[0]</string>
+    <string name="lock_label_sdcard">sdcard FUSE (solo diagnóstico)</string>
+    <string name="lock_conclusion_ok">CONCLUSIÓN: el almacenamiento externo soporta lock exclusivo. Diseño §9.3 viable.</string>
+    <string name="lock_conclusion_fail">CONCLUSIÓN: el almacenamiento EXTERNO NO soporta lock exclusivo. Los mundos deben vivir en filesDir. Revisar CONTEXTO.md §9.4.</string>
+
+    <!-- ===== ServerTestActivity / ScreenOffTestActivity ===== -->
+    <string name="diag_btn_start_server">ARRANCAR SERVIDOR (1.21.1)</string>
+    <string name="diag_btn_clear">Limpiar</string>
+    <string name="diag_btn_prev_info">Diagnóstico previo</string>
+    <string name="diag_btn_start_fgs">1. ARRANCAR SERVICIO (FGS)</string>
+    <string name="diag_btn_status">2. ESTADO ACTUAL</string>
+    <string name="diag_btn_stop">3. DETENER</string>
+    <string name="diag_btn_read_log">LEER LOG DEL SERVIDOR</string>
+    <string name="diag_service_stopped">servicio detenido</string>
+    <string name="diag_starting_fgs">arrancando ForegroundService</string>
+    <string name="diag_order_sent">orden enviada. Puedes apagar la pantalla ahora.</string>
+    <string name="diag_status_header">=== ESTADO ===</string>
+    <string name="diag_prev_info_header">=== INFO PREVIA ===</string>
+</resources>

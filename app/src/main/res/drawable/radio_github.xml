@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Radio button estilo GitHub: circulito gris que se vuelve verde con punto blanco al seleccionar -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Deshabilitado -->
+    <item android:state_checked="true" android:state_enabled="false">
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <size android:width="18dp" android:height="18dp" />
+                    <solid android:color="#dfdfe2" />
+                    <stroke android:width="1dp" android:color="#d0d7de" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <!-- Seleccionado: circulo verde con punto blanco central -->
+    <item android:state_checked="true">
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <size android:width="18dp" android:height="18dp" />
+                    <solid android:color="@color/btn_green" />
+                </shape>
+            </item>
+            <item android:gravity="center" android:top="4dp" android:bottom="4dp" android:left="4dp" android:right="4dp">
+                <shape android:shape="oval">
+                    <solid android:color="#ffffff" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <!-- Normal: circulo blanco con borde gris -->
+    <item>
+        <shape android:shape="oval">
+            <size android:width="18dp" android:height="18dp" />
+            <solid android:color="#ffffff" />
+            <stroke android:width="1dp" android:color="#8c959f" />
+        </shape>
+    </item>
+</selector>

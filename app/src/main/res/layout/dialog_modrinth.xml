@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hoja Modrinth: buscador + filtros + resultados con scroll infinito -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/modrinth_title"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/on_surface" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:hint="@string/modrinth_search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:background="@drawable/bg_btn_secondary"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            style="@style/BtnGreen"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:minWidth="0dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/modrinth_search" />
+    </LinearLayout>
+
+    <!-- Chips de filtro: estilo Modrinth (scrollable horizontal, chips redondeados) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/modrinth_env"
+            android:textSize="12sp"
+            android:textColor="@color/on_surface_secondary"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="6dp" />
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:fillViewport="false">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <Button
+                    android:id="@+id/chipEnvAll"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/modrinth_env_all" />
+                <Button
+                    android:id="@+id/chipEnvServer"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/modrinth_env_server" />
+                <Button
+                    android:id="@+id/chipEnvClient"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/modrinth_env_client" />
+                <Button
+                    android:id="@+id/chipEnvBoth"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="@string/modrinth_env_both" />
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- Chips de orden: scrollable horizontal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/modrinth_sort"
+            android:textSize="12sp"
+            android:textColor="@color/on_surface_secondary"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="6dp" />
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:fillViewport="false">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <Button
+                    android:id="@+id/chipSortRelevance"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/modrinth_sort_relevance" />
+                <Button
+                    android:id="@+id/chipSortDownloads"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/modrinth_sort_downloads" />
+                <Button
+                    android:id="@+id/chipSortNew"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/modrinth_sort_new" />
+                <Button
+                    android:id="@+id/chipSortUpdated"
+                    style="@style/Widget.Minicraft.Chip.Modrinth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="@string/modrinth_sort_updated" />
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSearchStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/modrinth_loading"
+        android:textSize="12sp"
+        android:textColor="@color/on_surface_secondary" />
+
+    <ListView
+        android:id="@+id/lvResults"
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:layout_marginTop="6dp"
+        android:divider="@color/border_soft"
+        android:dividerHeight="1dp" />
+</LinearLayout>

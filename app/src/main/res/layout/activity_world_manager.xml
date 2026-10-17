@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mundos — gestion de mundos (estilo prototipo worlds.html) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/canvas">
+
+    <include android:id="@+id/header" layout="@layout/view_header" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Mundo activo -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        style="@style/PanelTitle"
+                        android:text="@string/world_active" />
+
+                    <TextView
+                        android:id="@+id/pillActive"
+                        style="@style/Pill"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill_success"
+                        android:text="@string/world_loaded"
+                        android:textColor="@color/on_primary" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvActiveWorld"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface" />
+
+                <TextView
+                    android:id="@+id/tvActiveMeta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:textSize="11sp"
+                    android:textColor="@color/on_surface_secondary" />
+            </LinearLayout>
+
+            <!-- Todos los mundos -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_panel_header"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/PanelTitle"
+                    android:text="@string/world_all" />
+
+                <TextView
+                    android:id="@+id/tvWorldCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_secondary" />
+
+                <Button
+                    android:id="@+id/btnImportWorld"
+                    style="@style/BtnGreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="@string/worlds_btn_new" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/lvWorlds"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:divider="@color/border_soft"
+                android:dividerHeight="1dp"
+                android:background="@drawable/bg_card" />
+
+            <TextView
+                android:id="@+id/tvEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/worlds_empty"
+                android:textColor="@color/on_surface_secondary"
+                android:visibility="gone" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <include android:id="@+id/nav" layout="@layout/view_bottom_nav" />
+</LinearLayout>

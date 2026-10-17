@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Diálogo de configuración del servidor (ServerConfigSheet).
+  Tema: XML puro, sin AndroidX, widgets del framework.
+  Lee el heap del device via ActivityManager para el slider de RAM.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cfg_ram"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <SeekBar
+        android:id="@+id/seekRam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:max="4096"
+        android:progress="1024" />
+
+    <TextView
+        android:id="@+id/tvRamValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="1024 MB"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="13sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/cfg_cpu_cores"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etThreads"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_surface"
+        android:padding="10dp"
+        android:text="0"
+        android:textColor="?android:attr/textColorPrimary"
+        android:hint="@string/cfg_threads_hint" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/cfg_distance_mode"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- Presets de distancia para balancear visión vs latencia -->
+    <RadioGroup
+        android:id="@+id/rgPreset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="6dp">
+
+        <RadioButton
+            android:id="@+id/rbPresetLowLatency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cfg_preset_low_latency"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <RadioButton
+            android:id="@+id/rbPresetBalanced"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cfg_preset_balanced"
+            android:textColor="?android:attr/textColorPrimary"
+            android:layout_marginTop="4dp" />
+
+        <RadioButton
+            android:id="@+id/rbPresetHighView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cfg_preset_high_view"
+            android:textColor="?android:attr/textColorPrimary"
+            android:layout_marginTop="4dp" />
+
+        <RadioButton
+            android:id="@+id/rbPresetCustom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cfg_preset_custom"
+            android:textColor="?android:attr/textColorPrimary"
+            android:layout_marginTop="4dp" />
+    </RadioGroup>
+
+    <!-- Controles manuales que se muestran solo con "Personalizado" -->
+    <LinearLayout
+        android:id="@+id/llCustomDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/etViewDistance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_surface"
+            android:inputType="number"
+            android:padding="10dp"
+            android:hint="@string/cfg_view_hint"
+            android:text="8"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <EditText
+            android:id="@+id/etSimDistance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_surface"
+            android:inputType="number"
+            android:padding="10dp"
+            android:hint="@string/cfg_sim_hint"
+            android:text="6"
+            android:textColor="?android:attr/textColorPrimary" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/cfg_port"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etPort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_surface"
+        android:padding="10dp"
+        android:text="25565"
+        android:textColor="?android:attr/textColorPrimary"
+        android:inputType="number" />
+
+    <CheckBox
+        android:id="@+id/cbPlayit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/cfg_expose"
+        android:textColor="?android:attr/textColorPrimary"
+        android:checked="true" />
+
+</LinearLayout>

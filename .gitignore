@@ -1,0 +1,50 @@
+# ===== Gradle =====
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# ===== Android / NDK =====
+*.apk
+*.aab
+*.ap_
+*.dex
+local.properties
+app/.cxx/
+.cxx/
+.externalNativeBuild/
+captures/
+*.hprof
+
+# ===== IDE / editor =====
+.idea/
+*.iml
+.kotlin/
+.ktx/
+.vscode/
+*.swp
+
+# ===== Ficheros locales de este proyecto =====
+ktout/
+backups/
+
+# ===== Docs de desarrollo: solo en disco, NUNCA en GitHub =====
+CONTEXTO.md
+docs/
+
+# ===== Seguridad: nunca subir estos ficheros =====
+*.keystore
+*.jks
+google-services.json
+secrets.properties
+secrets.defaults.local.properties
+app/src/main/res/values/secrets.xml
+.env
+.env.*
+*.pem
+*.p12
+id_rsa*
+
+# ===== Logs / SO =====
+*.log
+.DS_Store
+Thumbs.db

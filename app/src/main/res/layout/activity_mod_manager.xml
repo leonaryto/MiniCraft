@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mods: lista con switch, filtros y agregar (Modrinth / archivos) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/canvas">
+
+    <include android:id="@+id/header" layout="@layout/view_header" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Info del loader -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvLoaderInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface" />
+
+                <TextView
+                    android:id="@+id/pillLoader"
+                    style="@style/Pill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_success"
+                    android:text="FABRIC"
+                    android:textColor="@color/on_primary" />
+            </LinearLayout>
+
+            <!-- Buscador -->
+            <EditText
+                android:id="@+id/etModFilter"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginTop="12dp"
+                android:hint="@string/mods_filter_hint"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1"
+                android:background="@drawable/bg_btn_secondary"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textSize="13sp" />
+
+            <!-- Chips de orden/filtro -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/chipSortName"
+                    style="@style/BtnChip"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="@string/mods_sort_name" />
+
+                <Button
+                    android:id="@+id/chipSortDate"
+                    style="@style/BtnChip"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="@string/mods_sort_date" />
+
+                <Button
+                    android:id="@+id/chipShowDisabled"
+                    style="@style/BtnChip"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="34dp"
+                    android:text="@string/mods_show_disabled" />
+            </LinearLayout>
+
+            <!-- Header: Mods instalados -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_panel_header"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/PanelTitle"
+                    android:text="@string/mods_installed" />
+
+                <TextView
+                    android:id="@+id/tvModsCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_secondary" />
+            </LinearLayout>
+
+            <!-- Lista de mods -->
+            <ListView
+                android:id="@+id/lvMods"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:divider="@color/border_soft"
+                android:dividerHeight="1dp"
+                android:background="@drawable/bg_card" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/mods_note"
+                android:textSize="11sp"
+                android:textColor="@color/on_surface_secondary" />
+        </LinearLayout>
+
+        <!-- Boton agregar: abre dialogo con 2 opciones -->
+        <Button
+            android:id="@+id/fabAddMods"
+            style="@style/FabBlue"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:text="+" />
+    </FrameLayout>
+
+    <include android:id="@+id/nav" layout="@layout/view_bottom_nav" />
+</LinearLayout>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Header compartido: icono + titulo + subtitulo mono (estilo prototipo) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@color/background"
+    android:elevation="2dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="14dp"
+    android:paddingBottom="12dp">
+
+    <View
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:background="@drawable/bg_btn_green" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ScreenTitle" />
+
+        <TextView
+            android:id="@+id/tvHeaderSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ScreenSubtitle" />
+    </LinearLayout>
+</LinearLayout>

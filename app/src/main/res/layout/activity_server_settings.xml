@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajustes — server.properties (estilo prototipo settings.html, GitHub/Primer) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/canvas">
+
+    <include android:id="@+id/header" layout="@layout/view_header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- ===== Panel: Idioma ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_panel_header"
+                    android:padding="12dp">
+
+                    <TextView
+                        style="@style/PanelTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/lang_title" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/lang_desc"
+                    android:textSize="11sp"
+                    android:textColor="@color/on_surface_secondary" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <Button
+                        android:id="@+id/btnLangEs"
+                        style="@style/BtnSecondary"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="6dp"
+                        android:text="@string/lang_es" />
+
+                    <Button
+                        android:id="@+id/btnLangEn"
+                        style="@style/BtnSecondary"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:text="@string/lang_en" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== Panel: General ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_panel_header"
+                    android:padding="12dp">
+
+                    <TextView
+                        style="@style/PanelTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_general" />
+                </LinearLayout>
+
+                <!-- MOTD -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_motd"
+                            android:textSize="14sp"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_motd_desc"
+                            android:textSize="11sp"
+                            android:textColor="@color/on_surface_secondary" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/etMotd"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_btn_secondary"
+                        android:padding="10dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/on_surface"
+                        android:inputType="text" />
+                </LinearLayout>
+
+                <!-- Puerto (solo lectura) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_port"
+                            android:textSize="14sp"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="server-port"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/on_surface_secondary" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvPort"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_surface" />
+                </LinearLayout>
+
+                <!-- RAM -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_ram"
+                            android:textSize="14sp"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_ram_desc"
+                            android:textSize="11sp"
+                            android:textColor="@color/on_surface_secondary" />
+                    </LinearLayout>
+
+                    <Spinner
+                        android:id="@+id/spinnerRam"
+                        android:layout_width="110dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_btn_secondary" />
+                </LinearLayout>
+
+                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:background="@color/border_soft" />
+                            </LinearLayout>
+
+                            <!-- ===== Panel: Presets de rendimiento ===== -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:orientation="vertical"
+                                android:background="@drawable/bg_card">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_panel_header"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/settings_presets"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:textColor="@color/on_surface" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingTop="10dp"
+                                    android:text="@string/settings_presets_desc"
+                                    android:textSize="11sp"
+                                    android:textColor="@color/on_surface_secondary" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:padding="12dp">
+
+                                    <Button
+                                        android:id="@+id/btnPresetBattery"
+                                        style="@style/BtnSecondary"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="40dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:text="@string/settings_preset_battery" />
+
+                                    <Button
+                                                            android:id="@+id/btnPresetBalanced"
+                                                            style="@style/BtnGreen"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="40dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:text="@string/settings_preset_balanced" />
+
+                                    <Button
+                                        android:id="@+id/btnPresetMax"
+                                        style="@style/BtnSecondary"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="40dp"
+                                        android:text="@string/settings_preset_max" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/tvPresetDesc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingBottom="12dp"
+                                    android:text="@string/settings_preset_custom_default"
+                                    android:textSize="11sp"
+                                    android:textColor="@color/text_mono" />
+                            </LinearLayout>
+
+                            <!-- ===== Panel: Juego ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_panel_header"
+                    android:padding="12dp">
+
+                    <TextView
+                        style="@style/PanelTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_gameplay" />
+                </LinearLayout>
+
+                <!-- Dificultad -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_difficulty"
+                            android:textSize="14sp"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="difficulty"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/on_surface_secondary" />
+                    </LinearLayout>
+
+                    <Spinner
+                        android:id="@+id/spinnerDifficulty"
+                        android:layout_width="130dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_btn_secondary" />
+                </LinearLayout>
+
+                <!-- Modo de juego -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_gamemode"
+                            android:textSize="14sp"
+                            android:textColor="@color/on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="gamemode"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/on_surface_secondary" />
+                    </LinearLayout>
+
+                    <Spinner
+                        android:id="@+id/spinnerGamemode"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_btn_secondary" />
+                </LinearLayout>
+
+                <!-- Distancia de renderizado -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_viewdistance"
+                        android:textSize="14sp"
+                        android:textColor="@color/on_surface" />
+
+                    <TextView
+                        android:id="@+id/tvViewDistanceVal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textColor="@color/on_surface_secondary" />
+
+                    <SeekBar
+                        android:id="@+id/seekViewDistance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:max="28" />
+                </LinearLayout>
+
+                <!-- Distancia de simulación -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_simdistance"
+                        android:textSize="14sp"
+                        android:textColor="@color/on_surface" />
+
+                    <TextView
+                        android:id="@+id/tvSimDistanceVal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textColor="@color/on_surface_secondary" />
+
+                    <SeekBar
+                        android:id="@+id/seekSimDistance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:max="28" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_soft" />
+            </LinearLayout>
+
+            <!-- ===== Panel: playit.gg ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_panel_header"
+                    android:padding="12dp">
+
+                    <TextView
+                        style="@style/PanelTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_playit" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_tunnel_domain"
+                        android:textSize="14sp"
+                        android:textColor="@color/on_surface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_tunnel_domain_desc"
+                        android:textSize="11sp"
+                        android:textColor="@color/on_surface_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvTunnelDomain"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textColor="@color/accent" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDirtyNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/settings_dirty_note"
+                android:textSize="11sp"
+                android:textColor="@color/warn"
+                android:visibility="gone" />
+
+            <!-- Barra de guardar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnUndo"
+                    style="@style/BtnSecondary"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="@string/settings_undo" />
+
+                <Button
+                    android:id="@+id/btnSave"
+                    style="@style/BtnGreen"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/settings_save" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <include android:id="@+id/nav" layout="@layout/view_bottom_nav" />
+</LinearLayout>

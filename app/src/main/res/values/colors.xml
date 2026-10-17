@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== Sistema de diseno GitHub / Primer ===== -->
+    <!-- Fondos -->
+    <color name="canvas">#f6f8fa</color>
+    <color name="background">#ffffff</color>
+    <color name="surface">#f6f8fa</color>
+    <color name="surface_subtle">#eff2f5</color>
+
+    <!-- Texto -->
+    <color name="on_surface">#1f2328</color>
+    <color name="on_surface_variant">#57606a</color>
+    <color name="on_surface_secondary">#656d76</color>
+    <color name="text_secondary">#656d76</color>
+    <color name="text_mono">#57606a</color>
+
+    <!-- Bordes -->
+    <color name="border">#d0d7de</color>
+    <color name="border_soft">#d8dee4</color>
+
+    <!-- Acentos -->
+    <color name="accent">#0969da</color>
+    <color name="accent_hover">#0550ae</color>
+    <color name="success">#1a7f37</color>
+    <color name="btn_green">#1f883d</color>
+    <color name="btn_green_pressed">#1a7f37</color>
+    <color name="primary">#22a755</color>
+    <color name="primary_dark">#1b7e40</color>
+    <color name="warn">#9a6700</color>
+    <color name="danger">#cf222e</color>
+    <color name="danger_subtle">#ffebe9</color>
+
+    <!-- Sobre primario -->
+    <color name="on_primary">#ffffff</color>
+    <color name="on_accent">#ffffff</color>
+
+    <!-- Terminal oscuro -->
+    <color name="terminal_bg">#0d1117</color>
+    <color name="terminal_text">#c9d1d9</color>
+    <color name="terminal_muted">#8b949e</color>
+    <color name="terminal_accent">#79c0ff</color>
+
+    <!-- Switch verdes -->
+    <color name="switch_green">#28a745</color>
+    <color name="switch_gray">#8b949e</color>
+
+    <color name="status_bar">#ffffff</color>
+
+    <!-- Chips estilo Modrinth -->
+    <color name="chip_bg_inactive">#F8F9FA</color>
+    <color name="chip_bg_active">#FFFFFF</color>
+    <color name="chip_stroke">#E0E0E0</color>
+    <color name="chip_stroke_active">#4299E1</color>
+    <color name="chip_text_inactive">#666666</color>
+    <color name="chip_text_active">#1A1A1A</color>
+</resources>

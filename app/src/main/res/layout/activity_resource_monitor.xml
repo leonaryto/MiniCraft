@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f6f8fa"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvPid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/monitor_pid"
+        android:textColor="#57606a"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvCpu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/monitor_cpu"
+        android:textColor="#57606a"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvMem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/monitor_mem"
+        android:textColor="#57606a"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvTemp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/monitor_temp"
+        android:textColor="#57606a"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/bg_progress_bar"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:indeterminate="false" />
+
+    <FrameLayout
+        android:id="@+id/sparkContainer"
+        android:layout_width="match_parent"
+        android:layout_height="120dp" />
+
+</LinearLayout>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- FGS specialUse: mantiene el servidor vivo con la pantalla apagada.
+         Ver CONTEXTO.md §6 — dataSync NO sirve (limite 6h en Android 15 y semantica
+         que no cubre un servidor de juegos). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".MinicraftApp"
+        android:allowBackup="false"
+        android:label="Minicraft"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault.Light">
+
+        <!-- UI principal: elegir versión, instalar y arrancar. -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:label="Minicraft">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Diagnóstico FASE 0/1. exportada pero ya NO es la launcher; se abre desde
+             MainActivity o por adb. -->
+        <activity
+            android:name=".diag.DiagActivity"
+            android:exported="true"
+            android:label="@string/diag_title" />
+
+        <!-- Diagnóstico FASE 2: prueba de arranque del servidor Minecraft. -->
+        <activity
+            android:name=".diag.ServerTestActivity"
+            android:exported="true"
+            android:label="@string/diag_server_test" />
+
+        <!-- Diagnóstico FASE 2b: prueba con pantalla apagada. -->
+        <activity
+            android:name=".diag.ScreenOffTestActivity"
+            android:exported="true"
+            android:label="@string/diag_screen_off_test" />
+
+        <!-- FASE C: gestor de mundos (importar/exportar/borrar). -->
+        <activity
+            android:name=".ui.WorldManager"
+            android:exported="true"
+            android:label="@string/world_manager_title" />
+
+        <!-- Pestana Consola (terminal + chips de comandos). -->
+        <activity
+            android:name=".ui.ConsoleActivity"
+            android:exported="true"
+            android:label="@string/nav_console" />
+
+        <!-- Pestana Mods (lista de jars del servidor activo). -->
+        <activity
+            android:name=".ui.ModManagerActivity"
+            android:exported="true"
+            android:label="@string/nav_mods" />
+
+        <!-- FASE C: monitor de recursos del server (CPU/mem/temp). -->
+        <activity
+            android:name=".ui.ResourceMonitor"
+            android:exported="true"
+            android:label="@string/resource_monitor_title" />
+
+        <!-- FASE C: pantalla de ajustes del servidor (server.properties). -->
+        <activity
+            android:name=".ui.ServerSettingsActivity"
+            android:exported="true"
+            android:label="@string/server_settings_title" />
+
+        <!-- FGS specialUse. exported=true SOLO para poder dispararlo desde adb durante las
+             pruebas (Fase 2). En la app final debe ser exported=false: la UI lo
+             arranca dentro del proceso. -->
+        <service
+            android:name=".service.MinecraftService"
+            android:exported="true"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="@string/fgs_subtype" />
+        </service>
+    </application>
+
+</manifest>

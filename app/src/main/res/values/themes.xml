@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MinicraftTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/canvas</item>
+        <item name="android:colorBackground">@color/canvas</item>
+        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:textColorPrimary">@color/on_surface</item>
+        <item name="android:textColorSecondary">@color/on_surface_secondary</item>
+        <item name="android:spinnerStyle">@style/MinicraftSpinner</item>
+    </style>
+
+    <style name="MinicraftSpinner" parent="android:Widget.Holo.Spinner">
+        <item name="android:background">@drawable/bg_btn_secondary</item>
+        <item name="android:popupBackground">@drawable/bg_spinner_dropdown</item>
+    </style>
+
+    <!-- Header de pantalla: titulo grande + subtitulo mono -->
+    <style name="ScreenTitle">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/on_surface</item>
+    </style>
+
+    <style name="ScreenSubtitle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_mono</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+
+    <!-- Titulo de panel (header de tarjeta) -->
+    <style name="PanelTitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/on_surface</item>
+    </style>
+
+    <!-- Boton primario verde GitHub -->
+    <style name="BtnGreen" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/bg_btn_green</item>
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Boton peligro (rojo solido) -->
+    <style name="BtnDanger" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/bg_btn_danger_solid</item>
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Boton secundario (blanco con borde) -->
+    <style name="BtnSecondary" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/bg_btn_secondary</item>
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Chip de comando rapido -->
+    <style name="BtnChip" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/bg_chip</item>
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Pill de estado (DETENIDO / EN LINEA) -->
+    <style name="Pill">
+        <item name="android:background">@drawable/bg_pill</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
+    </style>
+
+    <!-- Boton icono cuadrado (exportar/editar/borrar) -->
+    <style name="BtnIcon" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/bg_btn_icon</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- FAB azul redondo -->
+    <style name="FabBlue" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/bg_fab_blue</item>
+        <item name="android:textColor">@color/on_accent</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Chip estilo Modrinth: borde gris claro, fondo blanco, texto oscuro -->
+    <style name="Widget.Minicraft.Chip.Modrinth" parent="android:Widget.Material.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@drawable/bg_chip_modrinth_inactive</item>
+        <item name="android:textColor">@color/chip_text_inactive</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="MinicraftButton" parent="android:Widget.Material.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:background">@drawable/bg_btn_secondary</item>
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Pestaña del bottom nav -->
+    <style name="NavTab">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="NavLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/on_surface_secondary</item>
+        <item name="android:layout_marginTop">2dp</item>
+    </style>
+</resources>
