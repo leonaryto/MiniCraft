@@ -247,14 +247,6 @@ class MinecraftService : Service() {
     }
 
     private fun startServer() {
-        if (stopping) {
-            Log.w(TAG, "hay una parada en curso; no arranco el servidor")
-            return
-        }
-        if (ServerLauncher.running || thread?.isAlive == true) {
-            Log.w(TAG, "el servidor ya esta corriendo")
-            return
-        }
         // 1) Notificacion obligatoria para un FGS. Se crea ANTES de startForeground.
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -271,6 +263,12 @@ class MinecraftService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
+        val notifText = if (ServerLauncher.running && ServerLauncher.ready) {
+            val s = (System.currentTimeMillis() - ServerLauncher.readyAtMs) / 1000.0
+            getString(R.string.notif_ready, "%.0f".format(s))
+        } else {
+            getString(R.string.notif_text_running)
+        }
         val notif = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder(this, CHANNEL_ID)
         } else {
@@ -278,7 +276,7 @@ class MinecraftService : Service() {
             Notification.Builder(this)
         }
             .setContentTitle(getString(R.string.notif_title_active))
-            .setContentText(getString(R.string.notif_text_running))
+            .setContentText(notifText)
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setOngoing(true)
             .addAction(Notification.Action.Builder(
@@ -288,6 +286,16 @@ class MinecraftService : Service() {
         // startForeground en el hilo principal, sin ANR.
         startForeground(NOTIF_ID, notif)
         Log.i(TAG, "FGS iniciado (specialUse)")
+
+        if (stopping) {
+            Log.w(TAG, "hay una parada en curso; no arranco el servidor")
+            stopForeground(true)
+            return
+        }
+        if (ServerLauncher.running || thread?.isAlive == true) {
+            Log.w(TAG, "el servidor ya esta corriendo")
+            return
+        }
 
         // 2) WakeLock: mantiene la CPU despierta. Doze lo ignora, pero evita que
         //    el sistema mate el proceso por inactividad antes de entrar en Doze.
