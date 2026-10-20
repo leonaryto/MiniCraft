@@ -251,6 +251,10 @@ class MinecraftService : Service() {
             Log.w(TAG, "hay una parada en curso; no arranco el servidor")
             return
         }
+        if (ServerLauncher.running || thread?.isAlive == true) {
+            Log.w(TAG, "el servidor ya esta corriendo")
+            return
+        }
         // 1) Notificacion obligatoria para un FGS. Se crea ANTES de startForeground.
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -287,12 +291,14 @@ class MinecraftService : Service() {
 
         // 2) WakeLock: mantiene la CPU despierta. Doze lo ignora, pero evita que
         //    el sistema mate el proceso por inactividad antes de entrar en Doze.
-        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Minicraft::Server").apply {
-            setReferenceCounted(false)
-            acquire()   // sin timeout: el servicio lo libera al parar
+        if (wakeLock?.isHeld != true) {
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Minicraft::Server").apply {
+                setReferenceCounted(false)
+                acquire()   // sin timeout: el servicio lo libera al parar
+            }
+            Log.i(TAG, "WakeLock adquirido")
         }
-        Log.i(TAG, "WakeLock adquirido")
 
         // 3) Backstop para Doze: alarma periodica que despierta el servicio.
         WakeupScheduler.schedule(this)
@@ -301,10 +307,6 @@ class MinecraftService : Service() {
         // Leer configuración guardada por ServerConfigSheet para heap y view/sim distance.
         val cfg = com.minicraft.mcserver.ui.ServerConfigSheet.load(this)
         val heapMb = cfg.heapMb
-        if (thread?.isAlive == true) {
-            Log.w(TAG, "el servidor ya esta corriendo")
-            return
-        }
         val srvDir = serverDirPath?.let { File(it) }
             ?: LastServerStore.load(this)?.let { File(it.dir) }
         if (srvDir == null || !srvDir.isDirectory) {
