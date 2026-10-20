@@ -60,7 +60,7 @@ class WorldManager : NavActivity() {
             } else {
                 com.minicraft.mcserver.server.ServerProvisioner.dirFor(
                     ctx,
-                    com.minicraft.mcserver.server.ServerProvisioner.Flavor.FABRIC,
+                    com.minicraft.mcserver.server.ServerProvisioner.ServerType.FABRIC,
                     com.minicraft.mcserver.server.ServerProvisioner.SUPPORTED[0]
                 )
             }

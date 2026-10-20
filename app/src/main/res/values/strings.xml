@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Minicraft</string>
-    <string name="version_prompt">Select version</string>
+    <string name="version_prompt">Minecraft version</string>
+    <string name="server_type_label">Server type</string>
     <string name="install">Install</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>

@@ -8,7 +8,7 @@ under the same terms (inbound = outbound). There is no CLA.
 ## Ways to help
 
 - Report bugs with the device model, Android version, Minecraft version and
-  flavor (Vanilla/Fabric), plus `adb logcat` output if you can. Use the issue
+  server type (Vanilla/Fabric), plus `adb logcat` output if you can. Use the issue
   templates so the report includes the right details.
 - Test on devices other than the one in the issue reports.
 - Improve the UI, translations (English/Spanish), documentation or build.

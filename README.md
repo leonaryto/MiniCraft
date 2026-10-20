@@ -33,13 +33,13 @@ The server runs inside a foreground service with a wake lock, so it keeps runnin
 
 ## Supported
 
-- **Server flavors**: **Vanilla** and **Fabric**. Forge and NeoForge are **not** supported.
+- **Server types**: **Vanilla** (base game, no mods) and **Fabric** (mod loader). Forge and NeoForge are **not** supported.
 - **Minecraft versions**: **1.21.1** is the tested version. The app also lists **1.21**, **1.20.6** and **1.20.5**; all four require Java 21, but only 1.21.1 has been verified end to end (1.20.5 is known not to start).
 - **Mods**: Fabric mods for **1.21.1**, either searched on Modrinth or imported as local `.jar` files.
 
 ## Features
 
-- **Server install**: pick a version and flavor, and Minicraft downloads and provisions everything.
+- **Server install**: pick a Minecraft version and server type, and Minicraft downloads and provisions everything.
 - **Mod manager**: browse Modrinth (server-side, Fabric 1.21.1) or import local `.jar` mods; enable, disable and delete them.
 - **World manager**: import, export and delete the worlds of the active server.
 - **Live console**: watch server output and send commands in real time.

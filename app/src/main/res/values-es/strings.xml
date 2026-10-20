@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Minicraft</string>
-    <string name="version_prompt">Selecciona la versión</string>
+    <string name="version_prompt">Versión de Minecraft</string>
+    <string name="server_type_label">Tipo de servidor</string>
     <string name="install">Instalar</string>
     <string name="start">Iniciar</string>
     <string name="stop">Detener</string>

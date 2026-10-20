@@ -36,7 +36,7 @@ import java.util.Locale
 /**
  * UI principal de Minicraft (pestana Inicio).
  *
- * Permite: elegir version y sabor (Vanilla/Fabric), instalar, iniciar, detener,
+ * Permite: elegir version y tipo de servidor (Vanilla/Fabric), instalar, iniciar, detener,
  * exportar el log y ver el monitor de recursos. La consola vive en ConsoleActivity,
  * mods en ModManagerActivity, mundos en WorldManager y ajustes en ServerSettingsActivity
  * (bottom nav compartido via NavActivity).
@@ -51,7 +51,7 @@ class MainActivity : NavActivity() {
     private val stamp = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
     private lateinit var spinner: Spinner
-    private lateinit var flavorGroup: RadioGroup
+    private lateinit var serverTypeGroup: RadioGroup
     private lateinit var btnVanilla: RadioButton
     private lateinit var btnFabric: RadioButton
     private lateinit var logView: TextView
@@ -67,7 +67,7 @@ class MainActivity : NavActivity() {
     private lateinit var tvUptime: TextView
     private lateinit var tvPlayers: TextView
     private lateinit var tvVersion: TextView
-    private lateinit var tvFlavor: TextView
+    private lateinit var tvServerType: TextView
     private lateinit var tvTunnelAddr: TextView
     private lateinit var pillTunnel: TextView
     private lateinit var tvTps: TextView
@@ -83,7 +83,7 @@ class MainActivity : NavActivity() {
 
     private val prefs by lazy { getSharedPreferences("minicraft_ui", MODE_PRIVATE) }
 
-    private var pendingFlavor: ServerProvisioner.Flavor? = null
+    private var pendingServerType: ServerProvisioner.ServerType? = null
     private var pendingVersion: String = ServerProvisioner.SUPPORTED[0]
     private val REQ_MODS = 7
 
@@ -94,7 +94,7 @@ class MainActivity : NavActivity() {
         setupChrome()
 
         spinner = findViewById(R.id.spinnerVersion)
-        flavorGroup = findViewById(R.id.flavorGroup)
+        serverTypeGroup = findViewById(R.id.serverTypeGroup)
         btnVanilla = findViewById(R.id.rbVanilla)
         btnFabric = findViewById(R.id.rbFabric)
         logView = findViewById(R.id.logView)
@@ -109,7 +109,7 @@ class MainActivity : NavActivity() {
         tvUptime = findViewById(R.id.tvUptime)
         tvPlayers = findViewById(R.id.tvPlayers)
         tvVersion = findViewById(R.id.tvVersion)
-        tvFlavor = findViewById(R.id.tvFlavor)
+        tvServerType = findViewById(R.id.tvServerType)
         playitStatusView = findViewById(R.id.playitStatusView)
         tvTunnelAddr = findViewById(R.id.tvTunnelAddr)
         pillTunnel = findViewById(R.id.pillTunnel)
@@ -140,7 +140,7 @@ class MainActivity : NavActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-        flavorGroup.setOnCheckedChangeListener { _, _ ->
+        serverTypeGroup.setOnCheckedChangeListener { _, _ ->
             saveSelection()
             refreshStatus()
         }
@@ -211,32 +211,32 @@ class MainActivity : NavActivity() {
 
     // ---------------------------------------------------------- seleccion
     private fun currentVersion() = ServerProvisioner.SUPPORTED[spinner.selectedItemPosition]
-    private fun currentFlavor(): ServerProvisioner.Flavor =
-        if (btnFabric.isChecked) ServerProvisioner.Flavor.FABRIC
-        else ServerProvisioner.Flavor.VANILLA
+    private fun currentServerType(): ServerProvisioner.ServerType =
+        if (btnFabric.isChecked) ServerProvisioner.ServerType.FABRIC
+        else ServerProvisioner.ServerType.VANILLA
 
     /**
-     * Restaura la ultima seleccion de version/sabor. Primero usa la preferencia
+     * Restaura la ultima seleccion de version/tipo de servidor. Primero usa la preferencia
      * de la UI (se guarda al cambiar o al salir) y, si no existe, el ultimo
      * servidor lanzado. Nunca pisa los valores por defecto con datos invalidos.
      */
     private fun restoreSelection() {
         val last = LastServerStore.load(this)
         val savedVersion = prefs.getString(KEY_VERSION, null) ?: last?.version
-        val savedFlavor = prefs.getString(KEY_FLAVOR, null) ?: last?.flavor
+        val savedServerType = prefs.getString(KEY_SERVER_TYPE, null) ?: last?.serverType
 
         val idx = savedVersion?.let { ServerProvisioner.SUPPORTED.indexOf(it) } ?: -1
         if (idx >= 0) spinner.setSelection(idx)
         when {
-            savedFlavor.equals("vanilla", true) -> btnVanilla.isChecked = true
-            savedFlavor.equals("fabric", true) -> btnFabric.isChecked = true
+            savedServerType.equals("vanilla", true) -> btnVanilla.isChecked = true
+            savedServerType.equals("fabric", true) -> btnFabric.isChecked = true
         }
     }
 
     private fun saveSelection() {
         prefs.edit()
             .putString(KEY_VERSION, currentVersion())
-            .putString(KEY_FLAVOR, currentFlavor().name.lowercase())
+            .putString(KEY_SERVER_TYPE, currentServerType().name.lowercase())
             .apply()
     }
 
@@ -245,7 +245,7 @@ class MainActivity : NavActivity() {
     }
 
     private fun activeServerDir(): File =
-        ServerProvisioner.dirFor(this, currentFlavor(), currentVersion())
+        ServerProvisioner.dirFor(this, currentServerType(), currentVersion())
 
     // ---------------------------------------------------------- acciones
     private fun jrePresent() = File(filesDir, "jre/lib/libjli.so").isFile
@@ -253,7 +253,7 @@ class MainActivity : NavActivity() {
     private fun doInstall() {
         if (busy) return
         val v = currentVersion()
-        val f = currentFlavor()
+        val f = currentServerType()
         if (ServerProvisioner.isInstalled(this, f, v)) {
             ConsoleLog.add(getString(R.string.msg_already_installed, f, v))
             refreshStatus()
@@ -294,7 +294,7 @@ class MainActivity : NavActivity() {
 
     private fun doStart() {
         val v = currentVersion()
-        val f = currentFlavor()
+        val f = currentServerType()
         val jar = ServerProvisioner.launchJarFor(this, f, v)
         if (jar == null) {
             // La version elegida no esta instalada: mensaje claro y sin crash.
@@ -321,7 +321,7 @@ class MainActivity : NavActivity() {
      */
     private fun doDeleteServer() {
         val v = currentVersion()
-        val f = currentFlavor()
+        val f = currentServerType()
         if (ServerLauncher.running) {
             Toast.makeText(this, getString(R.string.msg_stop_before_delete), Toast.LENGTH_LONG).show()
             return
@@ -354,8 +354,8 @@ class MainActivity : NavActivity() {
             .show()
     }
 
-    fun openModPicker(flavor: ServerProvisioner.Flavor, ver: String) {
-        pendingFlavor = flavor
+    fun openModPicker(serverType: ServerProvisioner.ServerType, ver: String) {
+        pendingServerType = serverType
         pendingVersion = ver
         try {
             val i = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -373,9 +373,9 @@ class MainActivity : NavActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != REQ_MODS || resultCode != RESULT_OK || data == null) return
 
-        val flavor = pendingFlavor ?: return
+        val serverType = pendingServerType ?: return
         val ver = pendingVersion
-        val modsDir = File(ServerProvisioner.dirFor(this, flavor, ver), "mods")
+        val modsDir = File(ServerProvisioner.dirFor(this, serverType, ver), "mods")
         if (!modsDir.isDirectory) modsDir.mkdirs()
 
         var count = 0
@@ -428,7 +428,7 @@ class MainActivity : NavActivity() {
     // ------------------------------------------------------------- estado
     private fun refreshStatus() {
         val v = currentVersion()
-        val f = currentFlavor()
+        val f = currentServerType()
         val ip = lanAddress()
         val installed = ServerProvisioner.isInstalled(this, f, v)
 
@@ -454,7 +454,7 @@ class MainActivity : NavActivity() {
         btnToggleIp.alpha = if (ip != null) 1f else 0.4f
 
         tvVersion.text = v
-        tvFlavor.text = f.label
+        tvServerType.text = f.label
         tvPlayers.text = getString(R.string.players_count, ConsoleLog.playerCount().toString())
 
         btnInstall.isEnabled = !busy
@@ -571,7 +571,7 @@ class MainActivity : NavActivity() {
     companion object {
         const val TAG = "MinicraftUI"
         private const val KEY_VERSION = "selected_version"
-        private const val KEY_FLAVOR = "selected_flavor"
+        private const val KEY_SERVER_TYPE = "selected_server_type"
         private const val KEY_HIDE_IP = "hide_ip"
     }
 }

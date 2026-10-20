@@ -55,7 +55,7 @@ object ServerProvisioner {
     /** Versiones ofrecidas: todas requieren Java 21 (verificado en la API de Mojang). */
     val SUPPORTED = listOf("1.21.1", "1.21", "1.20.6", "1.20.5")
 
-    enum class Flavor(val label: String) { VANILLA("Vanilla"), FABRIC("Fabric") }
+    enum class ServerType(val label: String) { VANILLA("Vanilla"), FABRIC("Fabric") }
 
     data class Result(val ok: Boolean, val message: String, val launchJar: String?)
 
@@ -63,23 +63,23 @@ object ServerProvisioner {
     fun serversRoot(ctx: Context): File = File(ctx.filesDir, "servers")
 
     /**
-     * Un directorio por version+flavor, p.ej. `servers/fabric-1.21.1`. Separarlos evita
-     * que cambiar de flavor deje librerias y modulos de Mojang mezclados.
+     * Un directorio por version y tipo de servidor, p.ej. `servers/fabric-1.21.1`.
+     * Separarlos evita que cambiar de tipo deje librerias y modulos de Mojang mezclados.
      */
-    fun dirFor(ctx: Context, flavor: Flavor, mcVersion: String): File =
-        File(serversRoot(ctx), "${flavor.name.lowercase()}-$mcVersion")
+    fun dirFor(ctx: Context, serverType: ServerType, mcVersion: String): File =
+        File(serversRoot(ctx), "${serverType.name.lowercase()}-$mcVersion")
 
-    fun isInstalled(ctx: Context, flavor: Flavor, mcVersion: String): Boolean =
-        launchJarFor(ctx, flavor, mcVersion) != null
+    fun isInstalled(ctx: Context, serverType: ServerType, mcVersion: String): Boolean =
+        launchJarFor(ctx, serverType, mcVersion) != null
 
     /** Nombre del jar a ejecutar, o null si no esta instalado. */
-    fun launchJarFor(ctx: Context, flavor: Flavor, mcVersion: String): String? {
-        val d = dirFor(ctx, flavor, mcVersion)
+    fun launchJarFor(ctx: Context, serverType: ServerType, mcVersion: String): String? {
+        val d = dirFor(ctx, serverType, mcVersion)
         return when {
             !d.isDirectory -> null
-            flavor == Flavor.FABRIC && File(d, "fabric-server-launch.jar").isFile ->
+            serverType == ServerType.FABRIC && File(d, "fabric-server-launch.jar").isFile ->
                 "fabric-server-launch.jar"
-            flavor == Flavor.VANILLA && File(d, "server.jar").isFile -> "server.jar"
+            serverType == ServerType.VANILLA && File(d, "server.jar").isFile -> "server.jar"
             else -> null
         }
     }
@@ -159,7 +159,7 @@ object ServerProvisioner {
 
     // -------------------------------------------------------------- vanilla
     private fun installVanilla(ctx: Context, mcVersion: String, log: (String) -> Unit): Result {
-        val dir = dirFor(ctx, Flavor.VANILLA, mcVersion)
+        val dir = dirFor(ctx, ServerType.VANILLA, mcVersion)
         dir.mkdirs()
 
         log("Vanilla $mcVersion:")
@@ -247,7 +247,7 @@ object ServerProvisioner {
 
     // --------------------------------------------------------------- fabric
     private fun installFabric(ctx: Context, mcVersion: String, log: (String) -> Unit): Result {
-        val dir = dirFor(ctx, Flavor.FABRIC, mcVersion)
+        val dir = dirFor(ctx, ServerType.FABRIC, mcVersion)
         dir.mkdirs()
         val jreHome = File(ctx.filesDir, "jre")
 
@@ -315,10 +315,10 @@ object ServerProvisioner {
     }
 
     // -------------------------------------------------------------- comun
-    fun install(ctx: Context, flavor: Flavor, mcVersion: String, log: (String) -> Unit): Result =
-        when (flavor) {
-            Flavor.VANILLA -> installVanilla(ctx, mcVersion, log)
-            Flavor.FABRIC -> installFabric(ctx, mcVersion, log)
+    fun install(ctx: Context, serverType: ServerType, mcVersion: String, log: (String) -> Unit): Result =
+        when (serverType) {
+            ServerType.VANILLA -> installVanilla(ctx, mcVersion, log)
+            ServerType.FABRIC -> installFabric(ctx, mcVersion, log)
         }
 
     /**

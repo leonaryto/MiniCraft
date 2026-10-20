@@ -51,12 +51,12 @@ class MinecraftService : Service() {
         const val EXTRA_ACTION = "action"     // "start" | "stop" | "cmd" | "install"
         const val EXTRA_CMD = "cmd"           // linea a escribir en la consola
         const val EXTRA_VERSION = "version"   // p.ej. "1.21.1"
-        const val EXTRA_FLAVOR = "flavor"     // "vanilla" | "fabric"
+        const val EXTRA_SERVER_TYPE = "serverType"     // "vanilla" | "fabric"
         /** Accion de verificacion: instala el servidor sin pasar por la UI. */
         const val EXTRA_INSTALL = "install"
         const val EXTRA_MCVERSION = "mcversion"
         /** Ruta ABSOLUTA del directorio del servidor. Tiene prioridad sobre
-         *  flavor+version; la usan ServerTestActivity y las pruebas por adb. */
+         *  tipo de servidor + version; la usan ServerTestActivity y las pruebas por adb. */
         const val EXTRA_SERVER_DIR = "serverDir"
 
         /**
@@ -146,7 +146,7 @@ class MinecraftService : Service() {
                 // Sin esto el sistema mata el proceso a los ~5 s: la descarga del
                 // instalador y su ejecucion tardan mas que eso.
                 goForeground(getString(R.string.notif_installing))
-                val flavor = intent?.getStringExtra(EXTRA_FLAVOR) ?: "fabric"
+                val serverType = intent?.getStringExtra(EXTRA_SERVER_TYPE) ?: "fabric"
                 val ver = intent?.getStringExtra(EXTRA_VERSION) ?: "1.21.1"
                 Thread({
                     // La JRE es requisito de TODO lo demas: sin ella el instalador
@@ -163,10 +163,10 @@ class MinecraftService : Service() {
                         stopSelf()
                         return@Thread
                     }
-                    val f = if (flavor == "vanilla") {
-                        ServerProvisioner.Flavor.VANILLA
+                    val f = if (serverType == "vanilla") {
+                        ServerProvisioner.ServerType.VANILLA
                     } else {
-                        ServerProvisioner.Flavor.FABRIC
+                        ServerProvisioner.ServerType.FABRIC
                     }
                     val res = ServerProvisioner.install(this, f, ver) { line ->
                         Log.i(TAG, line)
@@ -179,10 +179,10 @@ class MinecraftService : Service() {
             else -> {
                 // Resolver que servidor arrancar. Prioridad:
                 //   1) ruta explicita (serverDir)  -> pruebas / ServerTestActivity
-                //   2) flavor + version             -> lo que manda la UI
+                //   2) tipo de servidor + version  -> lo que manda la UI
                 //   3) el de siempre               -> fabric-1.21.1
                 val explicitDir = intent?.getStringExtra(EXTRA_SERVER_DIR)
-                val fl = intent?.getStringExtra(EXTRA_FLAVOR)
+                val fl = intent?.getStringExtra(EXTRA_SERVER_TYPE)
                 val ver = intent?.getStringExtra(EXTRA_VERSION)
                     ?: intent?.getStringExtra(EXTRA_MCVERSION)
 
@@ -191,9 +191,9 @@ class MinecraftService : Service() {
                     launchJarName = detectLaunchJar(File(explicitDir))
                 } else if (fl != null && fl.isNotBlank() && ver != null && ver.isNotBlank()) {
                     val f = if (fl.equals("vanilla", true)) {
-                        ServerProvisioner.Flavor.VANILLA
+                        ServerProvisioner.ServerType.VANILLA
                     } else {
-                        ServerProvisioner.Flavor.FABRIC
+                        ServerProvisioner.ServerType.FABRIC
                     }
                     val dir = ServerProvisioner.dirFor(this, f, ver)
                     val jar = ServerProvisioner.launchJarFor(this, f, ver)
@@ -207,14 +207,14 @@ class MinecraftService : Service() {
                     launchJarName = jar
                 } else {
                     // Reinicio por START_STICKY o por la alarma: no hay extras.
-                    // Retomamos el ultimo servidor lanzado, no un flavor fijo.
+                    // Retomamos el ultimo servidor lanzado, no un tipo fijo.
                     val last = LastServerStore.load(this)
                     if (last != null) {
                         serverDirPath = last.dir
                         launchJarName = detectLaunchJar(File(last.dir))
                         Log.i(TAG, "retomando ultimo servidor: ${last.dir}")
                     } else {
-                        val f = ServerProvisioner.Flavor.FABRIC
+                        val f = ServerProvisioner.ServerType.FABRIC
                         val fallbackVersion = "1.21.1"
                         val jar = ServerProvisioner.launchJarFor(this, f, fallbackVersion)
                         if (jar == null) {

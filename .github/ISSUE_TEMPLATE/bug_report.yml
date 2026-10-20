@@ -15,12 +15,13 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: flavor
+    id: server_type
     attributes:
-      label: Server flavor
+      label: Server type
+      description: Vanilla is the base game without mods. Fabric is a mod loader.
       options:
-        - Vanilla
-        - Fabric
+        - Vanilla (base game, no mods)
+        - Fabric (mod loader)
     validations:
       required: true
   - type: input

@@ -35,7 +35,7 @@ object ModStore {
     /** Directorio mods/ del servidor Fabric 1.21.1 (lo crea si falta). */
     fun modsDir(ctx: Context): File {
         val d = File(
-            ServerProvisioner.dirFor(ctx, ServerProvisioner.Flavor.FABRIC, ServerProvisioner.SUPPORTED[0]),
+            ServerProvisioner.dirFor(ctx, ServerProvisioner.ServerType.FABRIC, ServerProvisioner.SUPPORTED[0]),
             "mods"
         )
         if (!d.isDirectory) d.mkdirs()

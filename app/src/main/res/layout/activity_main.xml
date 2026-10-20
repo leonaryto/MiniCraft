@@ -336,7 +336,7 @@
                                 android:textColor="@color/on_surface" />
 
                             <TextView
-                                android:id="@+id/tvFlavor"
+                                android:id="@+id/tvServerType"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="10sp"
@@ -397,7 +397,7 @@
                     android:textColor="@color/on_surface_secondary" />
             </LinearLayout>
 
-            <!-- ===== Selector de versión / sabor ===== -->
+            <!-- ===== Selector de versión / tipo de servidor ===== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -420,8 +420,17 @@
                     android:background="@drawable/bg_btn_secondary"
                     android:paddingStart="10dp" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/server_type_label"
+                    android:textColor="@color/on_surface_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
                 <RadioGroup
-                                    android:id="@+id/flavorGroup"
+                                    android:id="@+id/serverTypeGroup"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="8dp"
