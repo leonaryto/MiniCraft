@@ -1,0 +1,58 @@
+name: Bug report
+description: Report a crash, install failure or server problem
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please remove playit.gg secrets, tokens and personal data from logs before posting.
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      placeholder: "e.g. Xiaomi M2012K11AG, Android 13"
+    validations:
+      required: true
+  - type: dropdown
+    id: flavor
+    attributes:
+      label: Server flavor
+      options:
+        - Vanilla
+        - Fabric
+    validations:
+      required: true
+  - type: input
+    id: mcversion
+    attributes:
+      label: Minecraft version
+      placeholder: "1.21.1"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste the relevant app console output or `adb logcat` lines.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I removed secrets, tokens and personal data from the logs.
+          required: true
