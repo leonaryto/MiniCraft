@@ -589,6 +589,67 @@
                     android:layout_marginStart="6dp"
                     android:text="@string/settings_save" />
             </LinearLayout>
+
+            <!-- ===== Panel: Acerca de ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_panel_header"
+                    android:padding="12dp">
+
+                    <TextView
+                        style="@style/PanelTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/about_title" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvAppVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="10dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/on_surface" />
+
+                <Button
+                    android:id="@+id/btnGithub"
+                    style="@style/BtnSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/about_github" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:text="@string/about_disclaimer"
+                    android:textSize="11sp"
+                    android:textColor="@color/on_surface_secondary" />
+
+                <Button
+                    android:id="@+id/btnLicenses"
+                    style="@style/BtnSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/about_licenses_button" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

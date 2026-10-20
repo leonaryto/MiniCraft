@@ -372,4 +372,15 @@
     <string name="diag_order_sent">order sent. You can turn the screen off now.</string>
     <string name="diag_status_header">=== STATUS ===</string>
     <string name="diag_prev_info_header">=== PREVIOUS INFO ===</string>
+
+    <string name="about_title">About</string>
+    <string name="about_version">Version %1$s (build %2$d)</string>
+    <string name="about_github">Source code on GitHub</string>
+    <string name="about_disclaimer">Minicraft is not affiliated with Mojang Studios or Microsoft. “Minecraft” is a trademark of Mojang Synergies AB.</string>
+    <string name="about_licenses_button">Licenses and notices</string>
+    <string name="about_license_gpl3">Minicraft license (GPL-3.0)</string>
+    <string name="about_license_gpl2">Java launcher license (GPL-2.0)</string>
+    <string name="about_third_party">Third-party notices</string>
+    <string name="about_close">Close</string>
+    <string name="about_asset_error">The license text could not be loaded.</string>
 </resources>

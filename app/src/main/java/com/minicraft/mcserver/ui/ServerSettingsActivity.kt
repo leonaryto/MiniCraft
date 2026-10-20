@@ -2,6 +2,7 @@ package com.minicraft.mcserver.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -90,6 +91,20 @@ class ServerSettingsActivity : NavActivity() {
         btnLangEs = findViewById(R.id.btnLangEs)
         btnLangEn = findViewById(R.id.btnLangEn)
         switchPlayit = findViewById(R.id.switchPlayit)
+
+        // Acerca de: version, GitHub y avisos legales (zona no intrusiva al final).
+        try {
+            val pi = packageManager.getPackageInfo(packageName, 0)
+            @Suppress("DEPRECATION")
+            val build = if (Build.VERSION.SDK_INT >= 28) pi.longVersionCode else pi.versionCode.toLong()
+            findViewById<TextView>(R.id.tvAppVersion).text =
+                getString(R.string.about_version, pi.versionName, build)
+        } catch (_: Exception) {
+            findViewById<TextView>(R.id.tvAppVersion).text =
+                getString(R.string.about_version, "?", 0L)
+        }
+        findViewById<Button>(R.id.btnGithub).setOnClickListener { AboutDialog.openGithub(this) }
+        findViewById<Button>(R.id.btnLicenses).setOnClickListener { AboutDialog.showLicenses(this) }
 
         // Panel de idioma: cambia la preferencia, refresca el holder y recrea
         // la Activity para que todo el UI se pinte con el nuevo locale.
