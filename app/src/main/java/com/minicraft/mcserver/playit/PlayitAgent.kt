@@ -7,10 +7,13 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.minicraft.mcserver.runtime.NativeLauncher
+import com.minicraft.mcserver.ui.ServerConfigSheet
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.SecureRandom
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -24,21 +27,28 @@ import java.util.concurrent.atomic.AtomicBoolean
  *  3. Arranca playitd: fork+execve desde nativeLibraryDir (NO desde files/ — W^X).
  *  4. Espera ~3 s a que el daemon se conecte a playit.gg y cargue túneles.
  *  5. Conecta al IPC (socket abstracto @playit_ipc via syscall nativas) → display_address + stats.
- *  6. Lee files/playit/playit.log → puerto público (connect_addr: IP:PORT).
- *  7. Combina: publicAddress = display_address + ":" + port.
+ * 6. Lee files/playit/playit.log → puerto público (connect_addr: IP:PORT).
+ * 7. Combina: publicAddress = display_address + ":" + port.
  *
- * El claim code "dc1b44f2ea" está EXPIRADO (verificado vía curl):
- *   POST /claim/exchange → {"status":"fail","data":"CodeExpired"}
- * Por eso el secret se pre-provisiona en files/playit/playit.toml antes de
- * instalar, y PlayitAgent solo hace el claim si el archivo no existe.
+ * CLAIM PROPIO POR INSTALACIÓN: si no hay secret en files/playit/playit.toml,
+ * la app GENERA un claim code aleatorio nuevo (10 hex), abre el navegador en
+ * playit.gg/claim/<code> para que el usuario lo reclame en SU cuenta y hace
+ * HEARTBEAT de POST /claim/setup hasta que responde "UserAccepted"; recién
+ * entonces POST /claim/exchange entrega el secret. (Sin ese heartbeat la web
+ * se queda en "Waiting for agent...". Antes se usaba un claim code hardcodeado
+ * de desarrollo, ya reclamado → "Agente ya reclamado".)
  *
- * Ver CONTEXTO.md §3 (W^X, jniLib), §4.3 (claim), §4.4 (--secret-path).
+ * TÚNEL AUTOMÁTICO: un agente recién reclamado NO tiene túnel. Cuando el daemon
+ * reporta por IPC su agent_id y no hay ningún túnel, la app crea uno
+ * (minecraft-java) vía la API con Agent-Key y lo configura a 127.0.0.1:25565.
+ *
+ * Ver CONTEXTO.md §3 (W^X, jniLib), §4.3 (claim), §4.4 (--secret-path),
+ * docs/PLAYIT-TESTING.md §4.3 (payloads API).
  */
 class PlayitAgent private constructor(private val ctx: Context) {
 
     companion object {
         const val TAG = "PlayitAgent"
-        private const val CLAIM_CODE = "dc1b44f2ea"
         private const val SOCKET_NAME = "@playit_ipc"
         private const val PLAYIT_DIR = "playit"
         private const val SECRET_FILE = "playit.toml"
@@ -55,6 +65,11 @@ class PlayitAgent private constructor(private val ctx: Context) {
         private const val CLAIM_SETUP_URL = "$PLAYIT_API/claim/setup"
         private const val CLAIM_EXCHANGE_URL = "$PLAYIT_API/claim/exchange"
         private const val RUNDATA_URL = "$PLAYIT_API/v1/agents/rundata"
+        private const val TUNNELS_CREATE_URL = "$PLAYIT_API/v1/tunnels/create"
+        private const val TUNNELS_CONFIG_URL = "$PLAYIT_API/v1/tunnels/config"
+
+        /** Version del agente que exige la API (rechaza < 1.0.12 con AgentVersionTooOld). */
+        private const val AGENT_VERSION = "playit 1.0.12"
     }
 
     // ------------------------------------------------------------------ estado
@@ -79,6 +94,7 @@ class PlayitAgent private constructor(private val ctx: Context) {
     private val ipcClient = TunnelIpcClient()
     private val uiHandler = Handler(Looper.getMainLooper())
     private val isRunning = AtomicBoolean(false)
+    private val tunnelEnsured = AtomicBoolean(false)
     private var daemonThread: Thread? = null
     private var logThread: Thread? = null
 
@@ -101,6 +117,7 @@ class PlayitAgent private constructor(private val ctx: Context) {
             return
         }
         log("PlayitAgent.start: iniciando")
+        tunnelEnsured.set(false)
         emit(PlayitState("Starting", null, null, null, 0, 0, 0, 0, null))
 
         daemonThread = Thread({ startDaemonAndConnect(log) }, "playit-daemon")
@@ -122,6 +139,7 @@ class PlayitAgent private constructor(private val ctx: Context) {
 
         currentSnapshot = null
         currentPort = null
+        tunnelEnsured.set(false)
         emit(PlayitState("Offline", null, null, null, 0, 0, 0, 0, null))
     }
 
@@ -217,6 +235,7 @@ class PlayitAgent private constructor(private val ctx: Context) {
                     val port = currentPort ?: readPortFromLog(log)
                     if (port != null) currentPort = port
                     emit(combineState(snap, port))
+                    maybeCreateTunnel(snap, log)
                 }
                 override fun onError(msg: String) {
                     log("[IPC] error: $msg")
@@ -243,13 +262,14 @@ class PlayitAgent private constructor(private val ctx: Context) {
             log("[Playit] secret ya existe en ${secretFile.name}")
             return true
         }
-        // El claim code dc1b44f2ea está EXPIRADO. Intentamos el exchange,
-        // pero si falla, no hay forma de obtener un nuevo secret sin un
-        // código fresco. Para el MVP se pre-provisiona el secret vía adb.
-        log("[Playit] no hay secret; intentando claim con código $CLAIM_CODE")
-        val secret = claimExchange(log)
+        // Genera un claim code NUEVO por instalación. El código lo elige el
+        // agente (no viene del servidor); un código hardcodeado haría que todos
+        // los usuarios intentaran reclamar el mismo agente ya reclamado.
+        val code = newClaimCode()
+        log("[Playit] no hay secret; generando claim propio: $code")
+        val secret = claimExchange(code, log)
         if (secret == null) {
-            log("[Playit] claim falló (CodeExpired). Verifica el secret manualmente.")
+            log("[Playit] claim fallido: no se obtuvo el secret")
             return false
         }
         playitDir.mkdirs()
@@ -258,51 +278,199 @@ class PlayitAgent private constructor(private val ctx: Context) {
         return true
     }
 
-    /** Intento de claim HTTP. Falla con CodeExpired para dc1b44f2ea (verificado). */
-    private fun claimExchange(log: (String) -> Unit): String? {
+    /** Claim code aleatorio de 10 hex (5 bytes); mismo formato que playit-cli. */
+    private fun newClaimCode(): String {
+        val bytes = ByteArray(5)
+        SecureRandom().nextBytes(bytes)
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
+
+    /**
+     * Reclama un agente con [code] replicando el flujo del playit-cli:
+     *  1. Heartbeat de POST /claim/setup hasta recibir "UserAccepted". Mientras
+     *     el agente no sondee setup en bucle, la web se queda en
+     *     "Waiting for agent..." y nunca deja aprobar el agente.
+     *  2. En la primera respuesta "WaitingForUserVisit"/"WaitingForUser" se abre
+     *     el navegador para que el usuario apruebe el agente en SU cuenta.
+     *  3. Ya aprobado, POST /claim/exchange devuelve el secret_key.
+     * Devuelve null si el usuario rechaza, el código expira o se agota el tiempo.
+     */
+    private fun claimExchange(code: String, log: (String) -> Unit): String? {
         return try {
-            val setupBody = JSONObject().apply {
-                put("code", CLAIM_CODE)
-                put("agent_type", "self-managed")
-                put("version", "playit 1.0.12")
-            }.toString()
-            val setupResp = httpPost(CLAIM_SETUP_URL, setupBody, null, log)
-            val setupStatus = setupResp?.optString("status")
-            val setupData = setupResp?.optJSONObject("data")?.optString("status")
-            log("[Playit] claim/setup: status=$setupStatus data=$setupData")
-
-            // Abrir navegador para que el usuario confirme el claim
-            try {
-                val uri = Uri.parse("https://playit.gg/claim/$CLAIM_CODE")
-                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                ctx.startActivity(intent)
-                log("[Playit] navegador abierto: playit.gg/claim/$CLAIM_CODE")
-            } catch (e: Exception) {
-                log("[Playit] no se pudo abrir navegador: ${e.message}")
-            }
-
-            // Polling del exchange (caduca en ~5 min)
-            for (i in 0 until 60) {
-                Thread.sleep(5000)
-                val exchangeBody = JSONObject().put("code", CLAIM_CODE).toString()
-                val resp = httpPost(CLAIM_EXCHANGE_URL, exchangeBody, null, log)
-                val key = resp?.optJSONObject("data")?.optString("secret_key")
-                if (!key.isNullOrEmpty()) {
-                    log("[Playit] claim/exchange exitoso")
-                    return key
-                }
-                val failData = resp?.optJSONObject("data")?.optString("data")
-                if (resp?.optString("status") == "fail" && failData == "CodeExpired") {
-                    log("[Playit] claim code expirado (CodeExpired)")
-                    return null
-                }
-            }
-            log("[Playit] claim/exchange: timeout")
-            null
+            if (!awaitUserAccept(code, log)) return null
+            exchangeSecret(code, log)
         } catch (e: Exception) {
             log("[Playit] claim error: ${e.message}")
+            null
+        }
+    }
+
+    /**
+     * Heartbeat de /claim/setup: abre el navegador en la primera respuesta válida
+     * y sigue sondeando hasta "UserAccepted" (o rechazo/timeout). En la respuesta
+     * `data` viene el estado como string (WaitingForUserVisit | WaitingForUser |
+     * UserAccepted | UserRejected).
+     */
+    private fun awaitUserAccept(code: String, log: (String) -> Unit): Boolean {
+        var browserOpened = false
+        val deadline = System.currentTimeMillis() + 5 * 60_000
+        while (isRunning.get() && System.currentTimeMillis() < deadline) {
+            val body = JSONObject().apply {
+                put("code", code)
+                put("agent_type", "self-managed")
+                put("version", AGENT_VERSION)
+            }.toString()
+            val resp = httpPost(CLAIM_SETUP_URL, body, null, log)
+            val state = resp?.optString("data")
+            log("[Playit] claim/setup: status=${resp?.optString("status")} data=$state")
+            when (state) {
+                "UserAccepted" -> {
+                    log("[Playit] claim aprobado por el usuario")
+                    return true
+                }
+                "UserRejected" -> {
+                    log("[Playit] claim rechazado en el navegador")
+                    return false
+                }
+                else -> {
+                    // WaitingForUserVisit / WaitingForUser / error transitorio:
+                    // abrir la web una vez y seguir sondeando hasta UserAccepted.
+                    if (!browserOpened) {
+                        browserOpened = true
+                        openClaimPage(code, log)
+                    }
+                }
+            }
+            Thread.sleep(1000)
+        }
+        log("[Playit] claim/setup: timeout esperando aprobación")
+        return false
+    }
+
+    /** Canjea el código ya aprobado por el secret_key. */
+    private fun exchangeSecret(code: String, log: (String) -> Unit): String? {
+        repeat(30) {
+            if (!isRunning.get()) return null
+            val resp = httpPost(
+                CLAIM_EXCHANGE_URL,
+                JSONObject().put("code", code).toString(),
+                null, log
+            )
+            val key = resp?.optJSONObject("data")?.optString("secret_key")
+            if (!key.isNullOrEmpty()) {
+                log("[Playit] claim/exchange exitoso")
+                return key
+            }
+            Thread.sleep(1000)
+        }
+        log("[Playit] claim/exchange: timeout")
+        return null
+    }
+
+    /** Abre playit.gg/claim/<code> en el navegador del dispositivo. */
+    private fun openClaimPage(code: String, log: (String) -> Unit) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://playit.gg/claim/$code"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            ctx.startActivity(intent)
+            log("[Playit] navegador abierto: playit.gg/claim/$code")
+        } catch (e: Exception) {
+            log("[Playit] no se pudo abrir navegador: ${e.message}")
+        }
+    }
+
+    // ------------------------------------------------------------------ túnel
+
+    /**
+     * Comprueba si hay que crear el túnel. Un agente recién reclamado no tiene
+     * ninguno; en ese caso se crea uno minecraft-java vía la API (Agent-Key).
+     * Se dispara desde el hilo de IPC: el trabajo HTTP va en su propio hilo.
+     */
+    private fun maybeCreateTunnel(snap: TunnelUrlParser.Snapshot, log: (String) -> Unit) {
+        val agentId = snap.agentId ?: return
+        // Ya hay túnel, o el daemon aún no está verificado: nada que hacer.
+        if (!snap.displayAddress.isNullOrEmpty()) return
+        if (snap.accountStatus != "verified") return
+        if (!tunnelEnsured.compareAndSet(false, true)) return
+        val secret = readSecretKey(log)
+        if (secret == null) {
+            tunnelEnsured.set(false)
+            return
+        }
+        Thread({ createTunnel(secret, agentId, log) }, "playit-tunnel").start()
+    }
+
+    /** Crea el túnel minecraft-java del agente y lo apunta a 127.0.0.1:<puerto>. */
+    private fun createTunnel(secret: String, agentId: String, log: (String) -> Unit) {
+        try {
+            val localPort = ServerConfigSheet.load(ctx).port
+            log("[Playit] creando túnel minecraft-java (agent=$agentId, local=$localPort)")
+            val createBody = JSONObject().apply {
+                put("name", "Minicraft Android")
+                put("protocol", JSONObject().apply {
+                    put("type", "tunnel-type")
+                    put("details", "minecraft-java")
+                })
+                put("origin", JSONObject().apply {
+                    put("type", "agent")
+                    put("data", JSONObject().apply {
+                        put("agent_id", agentId)
+                        put("config", JSONObject().put("fields", JSONArray()))
+                    })
+                })
+                put("endpoint", JSONObject().apply {
+                    put("type", "region")
+                    put("details", JSONObject().put("region", "global"))
+                })
+                put("enabled", true)
+                put("firewall_id", JSONObject.NULL)
+            }.toString()
+            val createResp = httpPost(TUNNELS_CREATE_URL, createBody, secret, log)
+            val tunnelId = extractTunnelId(createResp)
+            if (tunnelId == null) {
+                log("[Playit] no se pudo crear el túnel: $createResp")
+                tunnelEnsured.set(false)   // permitir reintento
+                return
+            }
+            log("[Playit] túnel creado: $tunnelId")
+
+            // Sin local_port el daemon recibe el túnel pero no redirige tráfico.
+            val configBody = JSONObject().apply {
+                put("tunnel_id", tunnelId)
+                put("new_agent_id", JSONObject.NULL)
+                put("new_config", JSONObject().apply {
+                    put("fields", JSONArray().apply {
+                        put(JSONObject().put("name", "local_ip").put("value", "127.0.0.1"))
+                        put(JSONObject().put("name", "local_port").put("value", localPort.toString()))
+                    })
+                })
+            }.toString()
+            val configResp = httpPost(TUNNELS_CONFIG_URL, configBody, secret, log)
+            log("[Playit] config túnel: status=${configResp?.optString("status")}")
+        } catch (e: Exception) {
+            log("[Playit] error creando túnel: ${e.message}")
+            tunnelEnsured.set(false)
+        }
+    }
+
+    /** Extrae el id del túnel de la respuesta de /tunnels/create. */
+    private fun extractTunnelId(resp: JSONObject?): String? {
+        if (resp == null) return null
+        return when (val data = resp.opt("data")) {
+            is JSONObject -> data.optString("id").ifEmpty { null }
+            is String -> data.ifEmpty { null }
+            else -> null
+        }
+    }
+
+    /** Lee secret_key del TOML files/playit/playit.toml. */
+    private fun readSecretKey(log: (String) -> Unit): String? {
+        return try {
+            if (!secretFile.exists()) return null
+            val m = Regex("""secret_key\s*=\s*"([^"]+)"""").find(secretFile.readText())
+            m?.groupValues?.get(1)
+        } catch (e: Exception) {
+            log("[Playit] no se pudo leer el secret: ${e.message}")
             null
         }
     }

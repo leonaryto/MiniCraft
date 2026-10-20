@@ -34,6 +34,7 @@ docs/
 # ===== Seguridad: nunca subir estos ficheros =====
 *.keystore
 *.jks
+keystore.properties
 google-services.json
 secrets.properties
 secrets.defaults.local.properties

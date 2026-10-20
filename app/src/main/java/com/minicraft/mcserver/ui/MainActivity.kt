@@ -21,6 +21,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import com.minicraft.mcserver.R
+import com.minicraft.mcserver.server.JreProvisioner
 import com.minicraft.mcserver.server.ServerLauncher
 import com.minicraft.mcserver.server.ServerProvisioner
 import com.minicraft.mcserver.service.MinecraftService
@@ -220,6 +221,21 @@ class MainActivity : NavActivity() {
         setBusy(true)
         ConsoleLog.add(getString(R.string.msg_installing, f, v))
         Thread({
+            // La JRE es requisito de TODO lo demas, y del instalador de Fabric en
+            // particular: sin ella el stub no enlaza libjli.so y el instalador sale
+            // con codigo 1. Se descarga aqui si falta (p.ej. primer arranque).
+            val jreErr = JreProvisioner.ensureInstalled(this) { line ->
+                ConsoleLog.add(line)
+            }
+            if (jreErr != null) {
+                ui.post {
+                    ConsoleLog.add(getString(R.string.msg_result_fail, jreErr))
+                    setBusy(false)
+                    refreshStatus()
+                    Toast.makeText(this, jreErr, Toast.LENGTH_LONG).show()
+                }
+                return@Thread
+            }
             val res = ServerProvisioner.install(this, f, v) { line ->
                 ConsoleLog.add(line)
             }

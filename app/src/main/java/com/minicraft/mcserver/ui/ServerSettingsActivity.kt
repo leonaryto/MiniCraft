@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.Spinner
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import com.minicraft.mcserver.AppLocale
@@ -50,6 +51,7 @@ class ServerSettingsActivity : NavActivity() {
     private lateinit var btnPresetMax: Button
     private lateinit var btnLangEs: Button
     private lateinit var btnLangEn: Button
+    private lateinit var switchPlayit: Switch
 
     private var dirty = false
 
@@ -87,6 +89,7 @@ class ServerSettingsActivity : NavActivity() {
         btnPresetMax = findViewById(R.id.btnPresetMax)
         btnLangEs = findViewById(R.id.btnLangEs)
         btnLangEn = findViewById(R.id.btnLangEn)
+        switchPlayit = findViewById(R.id.switchPlayit)
 
         // Panel de idioma: cambia la preferencia, refresca el holder y recrea
         // la Activity para que todo el UI se pinte con el nuevo locale.
@@ -141,6 +144,7 @@ class ServerSettingsActivity : NavActivity() {
         spinnerDifficulty.onItemSelectedListener = dirtyListener
         spinnerGamemode.onItemSelectedListener = dirtyListener
         etMotd.setOnKeyListener { _, _, _ -> markDirty(); false }
+        switchPlayit.setOnCheckedChangeListener { _, _ -> if (loaded) markDirty() }
 
         findViewById<Button>(R.id.btnSave).setOnClickListener { save() }
         findViewById<Button>(R.id.btnUndo).setOnClickListener { load(); clearDirty() }
@@ -159,6 +163,7 @@ class ServerSettingsActivity : NavActivity() {
     /** Carga la config existente (ServerConfigSheet.load, misma fuente que el servicio). */
     private fun load() {
         val cfg = ServerConfigSheet.load(this)
+        loaded = false
         etMotd.setText(getString(R.string.server_title))
         tvPort.text = cfg.port.toString()
         // RAM: elegir el valor guardado si existe en la lista, si no el mas cercano
@@ -173,6 +178,7 @@ class ServerSettingsActivity : NavActivity() {
         seekSd.progress = (cfg.simulationDistance - 2).coerceIn(0, seekSd.max)
         tvVd.text = "view-distance · " + cfg.viewDistance + " chunks"
         tvSd.text = "simulation-distance · " + cfg.simulationDistance + " chunks"
+        switchPlayit.isChecked = cfg.playitEnabled
         loaded = true
     }
 
@@ -185,7 +191,7 @@ class ServerSettingsActivity : NavActivity() {
         j.put("heapMb", RAM_OPTIONS[spinnerRam.selectedItemPosition])
         j.put("threads", cfg.threads)
         j.put("port", cfg.port)
-        j.put("playitEnabled", cfg.playitEnabled)
+        j.put("playitEnabled", switchPlayit.isChecked)
         j.put("viewDistance", vd)
         j.put("simulationDistance", sd)
         val f = File(filesDir, "server-config.json")

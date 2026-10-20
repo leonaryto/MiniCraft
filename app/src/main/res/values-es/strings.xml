@@ -129,6 +129,8 @@
     <string name="settings_simdistance">Distancia de simulación</string>
     <string name="settings_tunnel_domain">Dominio del túnel</string>
     <string name="settings_tunnel_domain_desc">dirección pública para tus amigos</string>
+    <string name="settings_playit_enable">Exponer a internet (playit.gg)</string>
+    <string name="settings_playit_enable_desc">Crea una dirección pública para que tus amigos entren desde cualquier lugar. Apagado = solo LAN.</string>
 
     <!-- ===== Interruptor de idioma (Ajustes, panel superior) ===== -->
     <string name="lang_title">Idioma</string>
@@ -175,7 +177,7 @@
     <string name="diag_title">Diagnóstico</string>
     <string name="diag_server_test">Prueba servidor</string>
     <string name="diag_screen_off_test">Prueba pantalla off</string>
-    <string name="fgs_subtype">Ejecuta un servidor de Minecraft local mientras el usuario no está mirando la pantalla</string>
+    <!-- fgs_subtype NO se traduce: es metadata del SO en el manifest, debe ser idéntica en todos los idiomas -->
 
     <!-- ===== MainActivity ===== -->
     <string name="status_connecting">CONECTANDO</string>

@@ -322,8 +322,13 @@ class MinecraftService : Service() {
         }, "server-watch").also { it.isDaemon = true }.start()
 
         // 5) Daemon playitd — tunel VPN hacia 127.0.0.1:25565. Se inicia en paralelo
-        //    al servidor; el daemon se conecta a playit.gg en ~2-3s.
-        playitAgent.start()
+        //    al servidor; el daemon se conecta a playit.gg en ~2-3s. Solo si el
+        //    usuario no lo desactivo en Ajustes (playitEnabled); apagado = solo LAN.
+        if (cfg.playitEnabled) {
+            playitAgent.start()
+        } else {
+            Log.i(TAG, "playit desactivado en Ajustes: servidor solo LAN")
+        }
     }
 
     /**

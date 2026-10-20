@@ -129,6 +129,8 @@
     <string name="settings_simdistance">Simulation distance</string>
     <string name="settings_tunnel_domain">Tunnel domain</string>
     <string name="settings_tunnel_domain_desc">public address for your friends</string>
+    <string name="settings_playit_enable">Expose to internet (playit.gg)</string>
+    <string name="settings_playit_enable_desc">Create a public address so friends can join from anywhere. Off = LAN only.</string>
 
     <!-- ===== Language switch (Settings, top panel) ===== -->
     <string name="lang_title">Language</string>

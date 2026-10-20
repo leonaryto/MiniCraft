@@ -1,8 +1,12 @@
+<p align="center">
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="120" alt="Minicraft icon">
+</p>
+
 # Minicraft — Minecraft Java Server on Android
 
 An Android app that turns a phone into a real **Minecraft Java Edition** server, with mod and world management, a live console, resource monitoring, and a [playit.gg](https://playit.gg) tunnel so friends can join without opening router ports.
 
-> **Status: in development (private).**
+> **Version 1.0.0.** Private preview.
 
 ## Supported
 
@@ -21,6 +25,13 @@ An Android app that turns a phone into a real **Minecraft Java Edition** server,
 - **Server config**: MOTD, port, RAM, difficulty, game mode and performance presets.
 - **Background service**: keeps the server running (foreground service) when the screen turns off.
 - **i18n**: English (default) and Spanish, switchable in Settings.
+
+## What's new in 1.0.0
+
+- **Fabric install fixed**: the installer now provisions the Java runtime first, so Fabric no longer fails with exit code 1.
+- **Automatic playit.gg setup**: each install claims its own agent (fresh claim code, browser approval) and creates its tunnel automatically — no shared/hardcoded agent.
+- **Public tunnel toggle**: Settings now has an *Expose to internet (playit.gg)* switch (on by default). Turn it off to run LAN-only.
+- **Launcher icon** and versioned first stable release.
 
 ## Download
 
