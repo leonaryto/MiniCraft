@@ -80,17 +80,24 @@
             android:exported="true"
             android:label="@string/server_settings_title" />
 
-        <!-- FGS specialUse. exported=true SOLO para poder dispararlo desde adb durante las
-             pruebas (Fase 2). En la app final debe ser exported=false: la UI lo
-             arranca dentro del proceso. -->
+        <!-- FGS specialUse: mantiene el servidor vivo con la pantalla apagada.
+             exported=false: solo la propia app puede arrancarlo. stopWithTask=false
+             permite que onTaskRemoved haga una parada ordenada al deslizar la app
+             fuera de Recientes. -->
         <service
             android:name=".service.MinecraftService"
-            android:exported="true"
+            android:exported="false"
+            android:stopWithTask="false"
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="@string/fgs_subtype" />
         </service>
+
+        <!-- Respaldo de Doze: la alarma debe poder entregar el broadcast explicito. -->
+        <receiver
+            android:name=".service.WakeupReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

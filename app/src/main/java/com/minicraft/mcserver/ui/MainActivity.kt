@@ -13,6 +13,7 @@ import android.provider.OpenableColumns
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.RadioButton
@@ -59,6 +60,7 @@ class MainActivity : NavActivity() {
     private lateinit var btnStop: Button
     private lateinit var btnExportLogs: Button
     private lateinit var btnResources: Button
+    private lateinit var btnToggleIp: Button
 
     private lateinit var tvServerAddress: TextView
     private lateinit var pillStatus: TextView
@@ -77,6 +79,9 @@ class MainActivity : NavActivity() {
 
     @Volatile private var playitState: PlayitAgent.PlayitState? = null
     @Volatile private var busy = false
+    private var ipHidden = true
+
+    private val prefs by lazy { getSharedPreferences("minicraft_ui", MODE_PRIVATE) }
 
     private var pendingFlavor: ServerProvisioner.Flavor? = null
     private var pendingVersion: String = ServerProvisioner.SUPPORTED[0]
@@ -98,6 +103,7 @@ class MainActivity : NavActivity() {
         btnStop = findViewById(R.id.btnStop)
         btnExportLogs = findViewById(R.id.btnExportLogs)
         btnResources = findViewById(R.id.btnResources)
+        btnToggleIp = findViewById(R.id.btnToggleIp)
         tvServerAddress = findViewById(R.id.tvServerAddress)
         pillStatus = findViewById(R.id.pillStatus)
         tvUptime = findViewById(R.id.tvUptime)
@@ -123,6 +129,28 @@ class MainActivity : NavActivity() {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
+        ipHidden = prefs.getBoolean(KEY_HIDE_IP, true)
+        restoreSelection()
+        updateIpToggle()
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                saveSelection()
+                refreshStatus()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        flavorGroup.setOnCheckedChangeListener { _, _ ->
+            saveSelection()
+            refreshStatus()
+        }
+        btnToggleIp.setOnClickListener {
+            ipHidden = !ipHidden
+            prefs.edit().putBoolean(KEY_HIDE_IP, ipHidden).apply()
+            updateIpToggle()
+            refreshStatus()
+        }
+
         btnInstall.setOnClickListener { doInstall() }
         btnStart.setOnClickListener { doStart() }
         btnStop.setOnClickListener { MinecraftService.stop(this) }
@@ -130,10 +158,6 @@ class MainActivity : NavActivity() {
         btnExportLogs.setOnClickListener { doExportLogs() }
         findViewById<Button>(R.id.btnDeleteServer).setOnClickListener { doDeleteServer() }
         playitStatusView.setOnClickListener { copyTunnelAddress() }
-
-        // Restaurar la ultima seleccion de servidor (version + sabor): la app
-        // recuerda que se lanzo la ultima vez y la deja seleccionada.
-        restoreLastSelection()
 
         PlayitAgent.get(this).listener = { st ->
             playitState = st
@@ -174,6 +198,7 @@ class MainActivity : NavActivity() {
 
     override fun onPause() {
         super.onPause()
+        saveSelection()
         ui.removeCallbacks(resourceTicker)
         ui.removeCallbacks(uptimeTicker)
     }
@@ -191,16 +216,32 @@ class MainActivity : NavActivity() {
         else ServerProvisioner.Flavor.VANILLA
 
     /**
-     * Deja seleccionados en la UI el flavor/version del ultimo server lanzado.
-     * Si nunca se lanzo uno (o el registro apunta a un server ya borrado), no
-     * toca nada: quedan los valores por defecto.
+     * Restaura la ultima seleccion de version/sabor. Primero usa la preferencia
+     * de la UI (se guarda al cambiar o al salir) y, si no existe, el ultimo
+     * servidor lanzado. Nunca pisa los valores por defecto con datos invalidos.
      */
-    private fun restoreLastSelection() {
-        val last = LastServerStore.load(this) ?: return
-        val idx = ServerProvisioner.SUPPORTED.indexOf(last.version)
+    private fun restoreSelection() {
+        val last = LastServerStore.load(this)
+        val savedVersion = prefs.getString(KEY_VERSION, null) ?: last?.version
+        val savedFlavor = prefs.getString(KEY_FLAVOR, null) ?: last?.flavor
+
+        val idx = savedVersion?.let { ServerProvisioner.SUPPORTED.indexOf(it) } ?: -1
         if (idx >= 0) spinner.setSelection(idx)
-        if (last.flavor.equals("vanilla", true)) btnVanilla.isChecked = true
-        else btnFabric.isChecked = true
+        when {
+            savedFlavor.equals("vanilla", true) -> btnVanilla.isChecked = true
+            savedFlavor.equals("fabric", true) -> btnFabric.isChecked = true
+        }
+    }
+
+    private fun saveSelection() {
+        prefs.edit()
+            .putString(KEY_VERSION, currentVersion())
+            .putString(KEY_FLAVOR, currentFlavor().name.lowercase())
+            .apply()
+    }
+
+    private fun updateIpToggle() {
+        btnToggleIp.text = getString(if (ipHidden) R.string.show_ip else R.string.hide_ip)
     }
 
     private fun activeServerDir(): File =
@@ -395,21 +436,22 @@ class MainActivity : NavActivity() {
             ServerLauncher.running && ServerLauncher.ready -> {
                 pillStatus.text = getString(R.string.status_online)
                 pillStatus.setTextColor(getColor(R.color.success))
-                tvServerAddress.text = if (ip != null) "$ip:25565" else getString(R.string.no_wifi)
             }
             ServerLauncher.running -> {
                 pillStatus.text = getString(R.string.status_starting)
                 pillStatus.setTextColor(getColor(R.color.warn))
-                tvServerAddress.text = if (ip != null) "$ip:25565" else getString(R.string.no_wifi)
             }
             else -> {
                 pillStatus.text = getString(R.string.status_stopped)
                 pillStatus.setTextColor(getColor(R.color.on_surface_secondary))
-                val tunnel = playitState?.publicAddress
-                tvServerAddress.text = tunnel
-                    ?: if (installed) getString(R.string.addr_port) else getString(R.string.addr_not_installed)
             }
         }
+
+        val address = if (ip != null) "$ip:25565" else getString(R.string.no_wifi)
+        tvServerAddress.text =
+            if (ip != null && ipHidden) getString(R.string.ip_hidden) else address
+        btnToggleIp.isEnabled = ip != null
+        btnToggleIp.alpha = if (ip != null) 1f else 0.4f
 
         tvVersion.text = v
         tvFlavor.text = f.label
@@ -528,5 +570,8 @@ class MainActivity : NavActivity() {
 
     companion object {
         const val TAG = "MinicraftUI"
+        private const val KEY_VERSION = "selected_version"
+        private const val KEY_FLAVOR = "selected_flavor"
+        private const val KEY_HIDE_IP = "hide_ip"
     }
 }

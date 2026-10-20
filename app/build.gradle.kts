@@ -20,7 +20,7 @@ android {
         applicationId = "com.minicraft.mcserver"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
+        versionCode = 3
         versionName = "1.0.0"
 
         // Solo arm64-v8a: el JRE bionic que descargamos es aarch64, y anadir

@@ -102,6 +102,10 @@
     <string name="label_version">VERSION</string>
     <string name="btn_delete_server">Delete selected server</string>
     <string name="btn_export_logs">Export logs</string>
+    <string name="ip_label">Server IP</string>
+    <string name="show_ip">Show IP</string>
+    <string name="hide_ip">Hide IP</string>
+    <string name="ip_hidden">••••••••</string>
 
     <!-- ===== Mods (hardcoded before) ===== -->
     <string name="mods_filter_hint">Filter by name…</string>

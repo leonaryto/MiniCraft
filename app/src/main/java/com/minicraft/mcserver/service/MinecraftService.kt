@@ -11,7 +11,9 @@ import android.os.Build
 import com.minicraft.mcserver.AppLocale
 import com.minicraft.mcserver.R
 import com.minicraft.mcserver.server.JreProvisioner
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
 import android.util.Log
@@ -19,6 +21,7 @@ import com.minicraft.mcserver.server.ServerLauncher
 import com.minicraft.mcserver.server.ServerProvisioner
 import com.minicraft.mcserver.playit.PlayitAgent
 import com.minicraft.mcserver.ui.ConsoleLog
+import com.minicraft.mcserver.ui.LastServerStore
 import java.io.File
 
 /**
@@ -38,6 +41,8 @@ class MinecraftService : Service() {
     private var wakeLock: PowerManager.WakeLock? = null
     private lateinit var playitAgent: PlayitAgent
     private var thread: Thread? = null
+    @Volatile private var stopping = false
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     companion object {
         const val TAG = "MinicraftService"
@@ -126,7 +131,7 @@ class MinecraftService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.getStringExtra(EXTRA_ACTION)) {
-            "stop" -> { stopServer(); return START_NOT_STICKY }
+            "stop" -> { stopServerAsync(); return START_NOT_STICKY }
             "cmd" -> {
                 val cmd = intent.getStringExtra(EXTRA_CMD).orEmpty().trim()
                 if (cmd.isEmpty()) {
@@ -177,13 +182,14 @@ class MinecraftService : Service() {
                 //   2) flavor + version             -> lo que manda la UI
                 //   3) el de siempre               -> fabric-1.21.1
                 val explicitDir = intent?.getStringExtra(EXTRA_SERVER_DIR)
+                val fl = intent?.getStringExtra(EXTRA_FLAVOR)
+                val ver = intent?.getStringExtra(EXTRA_VERSION)
+                    ?: intent?.getStringExtra(EXTRA_MCVERSION)
+
                 if (!explicitDir.isNullOrBlank()) {
                     serverDirPath = explicitDir
                     launchJarName = detectLaunchJar(File(explicitDir))
-                } else {
-                    val fl = intent?.getStringExtra(EXTRA_FLAVOR) ?: "fabric"
-                    val ver = intent?.getStringExtra(EXTRA_VERSION)
-                        ?: intent?.getStringExtra(EXTRA_MCVERSION) ?: "1.21.1"
+                } else if (fl != null && fl.isNotBlank() && ver != null && ver.isNotBlank()) {
                     val f = if (fl.equals("vanilla", true)) {
                         ServerProvisioner.Flavor.VANILLA
                     } else {
@@ -199,6 +205,28 @@ class MinecraftService : Service() {
                     }
                     serverDirPath = dir.absolutePath
                     launchJarName = jar
+                } else {
+                    // Reinicio por START_STICKY o por la alarma: no hay extras.
+                    // Retomamos el ultimo servidor lanzado, no un flavor fijo.
+                    val last = LastServerStore.load(this)
+                    if (last != null) {
+                        serverDirPath = last.dir
+                        launchJarName = detectLaunchJar(File(last.dir))
+                        Log.i(TAG, "retomando ultimo servidor: ${last.dir}")
+                    } else {
+                        val f = ServerProvisioner.Flavor.FABRIC
+                        val fallbackVersion = "1.21.1"
+                        val jar = ServerProvisioner.launchJarFor(this, f, fallbackVersion)
+                        if (jar == null) {
+                            Log.e(TAG, "no hay servidor recordado ni Fabric 1.21.1 instalado")
+                            updateNotification(getString(R.string.notif_install_server_first))
+                            stopSelf()
+                            return START_NOT_STICKY
+                        }
+                        serverDirPath =
+                            ServerProvisioner.dirFor(this, f, fallbackVersion).absolutePath
+                        launchJarName = jar
+                    }
                 }
                 startServer()
                 return START_STICKY
@@ -206,7 +234,23 @@ class MinecraftService : Service() {
         }
     }
 
+    /**
+     * El usuario deslizo la app fuera de Recientes. Es la forma intencional de
+     * cerrarla: paramos el servidor de forma ordenada y cancelamos la alarma,
+     * para que no se reinicie por detras. Si el sistema mata el proceso sin
+     * deslizar, START_STICKY y la alarma siguen siendo el respaldo.
+     */
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.i(TAG, "tarea eliminada de Recientes; deteniendo el servidor")
+        stopServerAsync()
+        super.onTaskRemoved(rootIntent)
+    }
+
     private fun startServer() {
+        if (stopping) {
+            Log.w(TAG, "hay una parada en curso; no arranco el servidor")
+            return
+        }
         // 1) Notificacion obligatoria para un FGS. Se crea ANTES de startForeground.
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -262,13 +306,15 @@ class MinecraftService : Service() {
             return
         }
         val srvDir = serverDirPath?.let { File(it) }
-            ?: File(filesDir, "servers/fabric-1.21.1")   // sin elegir: el de siempre
-        if (!srvDir.isDirectory) {
-            Log.e(TAG, "el directorio del servidor no existe: ${srvDir.absolutePath}")
+            ?: LastServerStore.load(this)?.let { File(it.dir) }
+        if (srvDir == null || !srvDir.isDirectory) {
+            Log.e(TAG, "el directorio del servidor no existe: ${srvDir?.absolutePath}")
             updateNotification(getString(R.string.notif_install_server_first))
             stopSelf()
             return
         }
+        serverDirPath = srvDir.absolutePath
+        if (launchJarName.isBlank()) launchJarName = detectLaunchJar(srvDir)
         Log.i(TAG, "servidor elegido: ${srvDir.name} jar=$launchJarName")
         // Generar/actualizar server.properties con view/sim distance elegidos (latencia).
         generateServerProperties(srvDir, cfg)
@@ -304,8 +350,21 @@ class MinecraftService : Service() {
         }, "server-thread").also { it.start() }
 
         // Vigilante: actualiza la notificacion cuando el servidor queda listo y
-        // detecta si muere con la pantalla apagada.
+        // detecta si muere con la pantalla apagada. Espera a que ServerLauncher
+        // marque running=true: el hilo del servidor compite con este al arrancar.
         Thread({
+            var waited = 0
+            while (!ServerLauncher.running && waited < 10_000) {
+                if (stopping) return@Thread
+                try { Thread.sleep(100) } catch (_: InterruptedException) { return@Thread }
+                waited += 100
+            }
+            if (!ServerLauncher.running) {
+                Log.e(TAG, "el servidor no llego a arrancar")
+                shutdownAfterServerExit()
+                return@Thread
+            }
+
             var announced = false
             while (ServerLauncher.running) {
                 if (ServerLauncher.ready && !announced) {
@@ -319,6 +378,9 @@ class MinecraftService : Service() {
                 Log.i(TAG, "el servidor termino: exit=${ServerLauncher.exitCode}")
                 updateNotification(getString(R.string.notif_stopped, ServerLauncher.exitCode))
             }
+            // Sin servidor no hace falta mantener el proceso en primer plano.
+            // Si la parada fue pedida por el usuario, [stopping] ya esta activo.
+            shutdownAfterServerExit()
         }, "server-watch").also { it.isDaemon = true }.start()
 
         // 5) Daemon playitd — tunel VPN hacia 127.0.0.1:25565. Se inicia en paralelo
@@ -404,7 +466,29 @@ class MinecraftService : Service() {
         Log.i(TAG, "server.properties actualizado (view=${cfg.viewDistance}, sim=${cfg.simulationDistance})")
     }
 
-    private fun stopServer() {
+    /**
+     * Parada pedida por el usuario o por Recientes. El trabajo pesado (esperar a
+     * que el servidor guarde) va en un hilo aparte para no bloquear el hilo
+     * principal del servicio.
+     */
+    private fun stopServerAsync() {
+        if (stopping) return
+        stopping = true
+        Thread({
+            try {
+                stopServerBlocking()
+            } catch (t: Throwable) {
+                Log.e(TAG, "error al detener el servidor", t)
+            } finally {
+                mainHandler.post {
+                    stopForeground(true)
+                    stopSelf()
+                }
+            }
+        }, "server-stop").start()
+    }
+
+    private fun stopServerBlocking() {
         Log.i(TAG, "deteniendo servicio")
         // Preferencia por la consola: `stop` graba los chunks y devuelve exit=0, mientras
         // que SIGTERM mata el proceso por señal y puede dejar el mundo a medias. Solo si
@@ -415,6 +499,28 @@ class MinecraftService : Service() {
         }
         ServerLauncher.stop()        // SIGTERM, idempotente si ya salio
         Thread.sleep(1500)
+        cleanupResources()
+    }
+
+    /** El servidor murio solo: no hay que enviarle `stop`, solo limpiar y salir. */
+    private fun shutdownAfterServerExit() {
+        if (stopping) return
+        stopping = true
+        Thread({
+            try {
+                cleanupResources()
+            } catch (t: Throwable) {
+                Log.e(TAG, "error al cerrar el servicio", t)
+            } finally {
+                mainHandler.post {
+                    stopForeground(true)
+                    stopSelf()
+                }
+            }
+        }, "server-exit").start()
+    }
+
+    private fun cleanupResources() {
         ServerLauncher.shutdown()
         playitAgent.stop()  // Detener daemon playitd
         thread?.interrupt()
@@ -422,11 +528,15 @@ class MinecraftService : Service() {
         wakeLock?.let { if (it.isHeld) it.release() }
         wakeLock = null
         WakeupScheduler.cancel(this)
-        stopForeground(true)
-        stopSelf()
     }
 
     override fun onDestroy() {
+        if (!stopping) {
+            // El sistema destruyo el servicio sin pasar por una parada ordenada:
+            // no dejamos un servidor huerfano. START_STICKY lo relanzara limpio.
+            ServerLauncher.stop()
+            ServerLauncher.shutdown()
+        }
         playitAgent.stop()  // Asegurar que el daemon para si el servicio se destruye
         wakeLock?.let { if (it.isHeld) it.release() }
         Log.i(TAG, "servicio destruido")
@@ -471,6 +581,12 @@ object WakeupScheduler {
 class WakeupReceiver : android.content.BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
         Log.i("MinicraftWakeup", "alarma disparada; reintentando foreground")
-        MinecraftService.start(ctx)
+        try {
+            MinecraftService.start(ctx)
+        } catch (t: Throwable) {
+            // Android 12+ puede bloquear el arranque de un FGS desde background.
+            // La alarma se reintenta; no dejamos que el receiver crashee.
+            Log.w("MinicraftWakeup", "no se pudo relanzar el servicio: ${t.message}")
+        }
     }
 }
