@@ -16,7 +16,7 @@ Minicraft is a free, non-commercial project. It is **not** a Termux script, a PR
 
 Running Java on Android is the hard part, because Android does not ship a Java runtime and blocks executing binaries from normal app storage. Minicraft solves this in three pieces:
 
-1. **Java runtime** — on first use the app downloads a bionic **OpenJDK 21** runtime (built from Termux packages), verifies it, and installs it into app-private storage (`files/jre`, ~240 MB). It is downloaded, not bundled in the APK.
+1. **Java runtime** — on first use the app downloads a bionic **OpenJDK 21** runtime (built from Termux packages), verifies it, and installs it into app-private storage (`files/jre`, ~250 MB). It is downloaded, not bundled in the APK.
 2. **Native launcher** — a small C/JNI library starts the JVM with `fork` + `execve` from the app's `nativeLibraryDir`. That directory is executable and sits outside Android's W^X restriction, which is what lets a full JVM start on a non-rooted phone.
 3. **Playit agent** — `playitd` is bundled as a native library and controlled by the app over a local abstract socket (`@playit_ipc`). Each install claims its own agent and creates its own tunnel.
 
@@ -49,20 +49,12 @@ The server runs inside a foreground service with a wake lock, so it keeps runnin
 - **Background service**: keeps the server alive while the screen is off.
 - **i18n**: English (default) and Spanish, switchable in Settings.
 
-## What's new in 1.0.0
-
-- **Fabric install fixed**: the installer now provisions the Java runtime first, so Fabric no longer fails with exit code 1.
-- **Automatic playit.gg setup**: each install claims its own agent (fresh claim code, browser approval) and creates its tunnel automatically — no shared or hardcoded agent.
-- **Public tunnel toggle**: Settings has an *Expose to internet (playit.gg)* switch, on by default. Turn it off to run LAN-only.
-- **Launcher icon** and the first versioned stable release.
-
 ## Download and install
 
 Get the latest APK from **[Releases](../../releases)** and sideload it on the device.
 
 - The APK is **arm64-v8a only**; it will not install on other architectures.
 - If a previous build was signed with a different key (for example an older debug build), uninstall it first.
-- This 1.0.0 APK is a rebuilt release (versionCode 2) that adds the license and legal notices. It updates in place over the earlier 1.0.0 build because it uses the same signing key.
 - The first launch needs an internet connection to download the Java runtime and the server (~250 MB total).
 - Installing a server means accepting the [Minecraft EULA](https://aka.ms/MinecraftEULA); the app writes `eula=true` for you.
 
@@ -117,6 +109,8 @@ APIs used at runtime: Mojang version manifest, Fabric Meta/installer, Modrinth A
 | `LICENSE` / `NOTICE` | Project license (GPL-3.0) and copyright notice |
 | `THIRD-PARTY-NOTICES.md` | Third-party licenses and trademark notices |
 | `CONTRIBUTING.md` | How to build and contribute |
+| `SECURITY.md` | How to report vulnerabilities privately |
+| `.github/` | Issue and pull request templates |
 
 ## Building from source
 
@@ -134,7 +128,7 @@ You need JDK 17+, the Android SDK (platform 34) and the NDK with CMake 3.22.1. P
 - Minicraft is **not affiliated with Mojang Studios or Microsoft**. "Minecraft" is a trademark of Mojang Synergies AB.
 - The app downloads the official server jar from Mojang; it does not redistribute it. Running a server is subject to the Minecraft EULA.
 - `playitd` is distributed under the BSD-2-Clause license; its notice must be kept in binary distributions.
-- The bundled Java launcher stub comes from Termux's OpenJDK 21 package (GPL-2.0 with Classpath Exception). Full texts are in [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) and inside the app under **Settings → Licenses and notices**.
+- The bundled Java launcher stub comes from Termux's OpenJDK 21 package (GPL-2.0 with Classpath Exception). Full texts are in [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) and inside the app under **Settings → About → Licenses and notices**.
 - playit.gg and Modrinth are independent services; Minicraft is not affiliated with them.
 - Mods installed from Modrinth or imported locally keep their own licenses.
 - The launcher icon was generated with an AI image tool.
@@ -149,4 +143,4 @@ The app also shows this information offline: **Settings → About → Licenses a
 
 ## Contributing
 
-Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md), open an issue to discuss larger changes, and send a pull request. By contributing you agree to license your work under GPL-3.0-or-later (inbound = outbound).
+Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md), use the issue templates for bugs and feature requests, and send a pull request. Open an issue first for larger changes. By contributing you agree to license your work under GPL-3.0-or-later (inbound = outbound). For security problems, follow [`SECURITY.md`](SECURITY.md) instead of opening a public issue.

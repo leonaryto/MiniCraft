@@ -8,7 +8,8 @@ under the same terms (inbound = outbound). There is no CLA.
 ## Ways to help
 
 - Report bugs with the device model, Android version, Minecraft version and
-  flavor (Vanilla/Fabric), plus `adb logcat` output if you can.
+  flavor (Vanilla/Fabric), plus `adb logcat` output if you can. Use the issue
+  templates so the report includes the right details.
 - Test on devices other than the one in the issue reports.
 - Improve the UI, translations (English/Spanish), documentation or build.
 - Fix bugs and small features. For larger changes, open an issue first so we
@@ -31,6 +32,8 @@ root. **Never commit** `keystore.properties`, `*.jks`, `*.keystore`,
 
 ## Pull requests
 
+- Work from a fork and open a pull request; do not force-push `main`.
+- Pull requests are reviewed and merged by the maintainer.
 - Keep changes focused; one topic per PR.
 - Match the existing Kotlin style (4 spaces, no new dependencies unless
   discussed).
@@ -39,6 +42,11 @@ root. **Never commit** `keystore.properties`, `*.jks`, `*.keystore`,
   `THIRD-PARTY-NOTICES.md` (and the matching asset under
   `app/src/main/assets/licenses/`).
 - Do not remove the copyright, license or affiliation notices.
+
+## Security
+
+Do not open a public issue for a vulnerability. Follow
+[`SECURITY.md`](SECURITY.md) and use GitHub's private vulnerability reporting.
 
 ## Legal notes
 
