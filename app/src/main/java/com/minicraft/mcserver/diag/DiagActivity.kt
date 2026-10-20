@@ -12,7 +12,7 @@ import java.io.File
  * FASE 0 + FASE 1 — Diagnóstico de arranque.
  *
  * Comprueba en un dispositivo real las dos incógnitas que el escritorio no puede resolver:
- *   1. ¿Soporta FileLock el almacenamiento emulado? (§9.4 de CONTEXTO.md)
+ *   1. ¿Soporta FileLock el almacenamiento emulado?
  *   2. ¿Existe y es ejecutable /system/bin/linker64, y puede ejecutar un binario
  *      descarga? Es la vía legal para ejecutar la JVM bionic (targetSdk >= 29).
  *

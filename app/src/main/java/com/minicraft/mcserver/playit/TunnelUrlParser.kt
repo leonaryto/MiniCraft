@@ -37,7 +37,7 @@ import org.json.JSONObject
  *   connect_addr: 147.185.221.213:34544
  * Por eso PlayitAgent combina display_address (del IPC) + puerto (del log).
  *
- * Ver docs/PLAYIT-TESTING.md §5.2 (diferencias entre prompt y real).
+ * El host puede venir con o sin puerto; el puerto real se toma del log del agente.
  */
 object TunnelUrlParser {
 

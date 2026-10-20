@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- FGS specialUse: mantiene el servidor vivo con la pantalla apagada.
-         Ver CONTEXTO.md §6 — dataSync NO sirve (limite 6h en Android 15 y semantica
-         que no cubre un servidor de juegos). -->
+         dataSync NO sirve (limite 6h en Android 15 y semantica que no cubre
+         un servidor de juegos). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />

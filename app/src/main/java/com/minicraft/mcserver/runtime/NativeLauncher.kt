@@ -20,8 +20,6 @@ import java.io.File
  * Un .so de app tampoco tiene PT_INTERP, asi que linker64 lo rechazaria. La solucion
  * es que este codigo nativo haga fork() + execve() directamente: los argumentos
  * llegan intactos a la JVM sin pasar por el parser del linker.
- *
- * Ver CONTEXTO.md §3 (tabla de vias de ejecucion) y docs/FASE-0-ESTADO.md.
  */
 object NativeLauncher {
 
@@ -160,7 +158,7 @@ object NativeLauncher {
      * NO bloquea: el daemon corre en segundo plano mientras el servidor
      * JVM también corre. Usa g_playit_pid, separado de g_child_pid.
      *
-     * Ver CONTEXTO.md §3: nativeLibraryDir tiene etiqueta apk_data_file
+     * nativeLibraryDir tiene etiqueta apk_data_file
      * (no W^X), asi que execve funciona. Desde files/ fallaria con EACCES.
      */
     fun startPlayitDaemon(

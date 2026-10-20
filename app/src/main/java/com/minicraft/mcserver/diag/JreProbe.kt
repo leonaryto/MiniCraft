@@ -11,7 +11,6 @@ import java.io.File
  * con W^X activo y SELinux Enforcing?
  *
  * El JRE lo descarga el usuario o la app a jreRoot(); aqui solo se ejecuta.
- * Ver CONTEXTO.md §3 (tabla de vias de ejecucion) y §9.6 Fase 1.
  */
 object JreProbe {
 

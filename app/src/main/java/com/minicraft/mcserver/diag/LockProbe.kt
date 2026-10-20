@@ -9,7 +9,7 @@
 //     ¿Funciona FileChannel.lock() en externalFilesDir, en filesDir y en sdcard?
 //
 // NO es parte de la app final. Se ejecuta una vez, en la Fase 0, y su resultado decide
-// el modelo de almacenamiento (ver CONTEXTO.md §9.3-§9.4). Si el lock falla en externo,
+// el modelo de almacenamiento. Si el lock falla en externo,
 // hay que mover los mundos a filesDir y avisar al usuario.
 //
 // COMO EJECUTARLO

@@ -42,8 +42,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  * reporta por IPC su agent_id y no hay ningún túnel, la app crea uno
  * (minecraft-java) vía la API con Agent-Key y lo configura a 127.0.0.1:25565.
  *
- * Ver CONTEXTO.md §3 (W^X, jniLib), §4.3 (claim), §4.4 (--secret-path),
- * docs/PLAYIT-TESTING.md §4.3 (payloads API).
+ * El agente se ejecuta desde jniLibs (nativeLibraryDir), el claim usa la API
+ * HTTP de playit.gg y el secret se guarda en files/playit/playit.toml.
  */
 class PlayitAgent private constructor(private val ctx: Context) {
 
@@ -187,7 +187,7 @@ class PlayitAgent private constructor(private val ctx: Context) {
             val ok = ensureSecret(log)
             if (!ok) {
                 setError(log, "No se obtuvo el secret de playit. " +
-                        "Pre-provisioning manual requerido (ver CONTEXTO.md §4.3).")
+                        "Pre-provisioning manual requerido.")
                 return
             }
             val secret = secretFile.readText().trim()

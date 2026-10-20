@@ -16,7 +16,7 @@ import org.json.JSONObject
 /**
  * Descarga e instala el servidor de Minecraft (vanilla o Fabric).
  *
- * El flujo es el MISMO que se verifico en escritorio (docs/FASE-2-ESTADO.md §2), y por
+ * El flujo es el MISMO que se verifico en escritorio, y por
  * eso no hay nada que inventar aqui:
  *
  *   vanilla -> version_manifest_v2.json -> <version>.json -> downloads.server.url -> server.jar

@@ -77,10 +77,10 @@ android {
         jvmTarget = "17"
     }
 
-    // El stub de la JVM (jniLibs/arm64-v8a/bin/java) debe residir en nativeLibraryDir:
+    // El stub de la JVM (jniLibs/arm64-v8a/libmcjvmboot.so) debe residir en nativeLibraryDir:
     // /data/user/0 esta montado con W^X (execve -> EACCES), mientras que nativeLibraryDir
     // tiene otra etiqueta SELinux (apk_data_file) y Android garantiza el bit de
-    // ejecucion de sus .so. Ver docs/FASE-2-ESTADO.md seccion 5.
+    // ejecucion de sus .so.
     packaging {
         jniLibs.useLegacyPackaging = true      // extrae a nativeLibraryDir en vez de mapear del APK
         // El stub es un ejecutable, no una libreria: no debe perder simbolos al strip.

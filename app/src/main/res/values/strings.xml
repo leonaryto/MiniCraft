@@ -356,8 +356,8 @@
     <string name="lock_label_external_app">externalFilesDir (app external)</string>
     <string name="lock_label_external_dirs">getExternalFilesDirs()[0]</string>
     <string name="lock_label_sdcard">sdcard FUSE (diagnostics only)</string>
-    <string name="lock_conclusion_ok">CONCLUSION: external storage supports exclusive lock. Design §9.3 viable.</string>
-    <string name="lock_conclusion_fail">CONCLUSION: EXTERNAL storage does NOT support exclusive lock. Worlds must live in filesDir. See CONTEXTO.md §9.4.</string>
+    <string name="lock_conclusion_ok">CONCLUSION: external storage supports exclusive lock. Design viable.</string>
+    <string name="lock_conclusion_fail">CONCLUSION: EXTERNAL storage does NOT support exclusive lock. Worlds must live in filesDir.</string>
 
     <!-- ===== ServerTestActivity / ScreenOffTestActivity ===== -->
     <string name="diag_btn_start_server">START SERVER (1.21.1)</string>

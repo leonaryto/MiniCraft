@@ -29,14 +29,14 @@ import java.io.File
  *    Android lo extrae a `nativeLibraryDir`, que tiene otra etiqueta SELinux.
  *
  *  - El resto de la JRE (243 MB) se queda en el data dir (`filesDir/jre`), descargada
- *    en el primer arranque segun CONTEXTO.md seccion 9.2. `LD_LIBRARY_PATH` hace que
+ *    en el primer arranque. `LD_LIBRARY_PATH` hace que
  *    el linker cargue `libjli.so` y `lib/server/libjvm.so` de ahi, y
  *    `GetApplicationHomeFromDll()` (dladdr sobre libjli.so) encuentra el home.
  *
  *  - `libjvm.so` necesita `libandroid-shmem.so`, `libandroid-spawn.so` y
  *    `libc++_shared.so`, que la app deja en `<jre>/lib` (ver `extralib` en JreProbe).
  *
- * Ver cpp/launcher.c y docs/FASE-2-ESTADO.md seccion 5.
+ * Ver cpp/launcher.c.
  */
 object ServerLauncher {
 
@@ -121,7 +121,7 @@ object ServerLauncher {
      * que JNA avise (WARNING: IOException removing temporary files). Con esto el
      * directorio existe y es escribible por la app.
      *
-     * Aikar's G1GC flags (ver docs/LATENCY-RESEARCH.md §3): pausas GC < 50 ms en
+     * Aikar's G1GC flags: pausas GC < 50 ms en
      * lugar de las pausas de segundos del GC por defecto. Heap fijo (-Xms=-Xmx)
      * evita resize pauses.
      */

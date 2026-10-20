@@ -21,8 +21,6 @@
 //
 // Uso desde Kotlin:
 //     val rc = NativeLauncher.execve(paths, argv, envp, workingDir, timeoutMs)
-//
-// Ver CONTEXTO.md §3 (tabla de vias de ejecucion) y §9.6 Fase 1.
 
 #include <jni.h>
 #include <android/log.h>
@@ -104,19 +102,19 @@ static void free_string_array(char** a) {
 //     $ /system/bin/linker64 /path/java -Djava.awt.headless=true -jar x.jar
 //     error: expected absolute path: "-Djava.awt.headless=true"
 //
-// Ninguna combinacion de variables de entorno lo evita (9 vias probadas, ver
-// docs/FASE-2-ESTADO.md seccion 4.2): el launcher de la JVM reinyecta los flags como
+// Ninguna combinacion de variables de entorno lo evita (9 vias probadas):
+// el launcher de la JVM reinyecta los flags como
 // argv y vuelve a toparse con el parser del linker.
 //
 // LA SOLUCION (verificada): que el KERNEL ejecute el stub. El stub `bin/java` del
 // JDK de Termux es un ELF e_type=3 con PT_INTERP=/system/bin/linker64, asi que el
 // kernel carga el linker por el y le entrega el argv SIN reinterpretar. Para que
 // execve no choque con W^X, el stub va empaquetado como jniLib del APK: Android lo
-// extrae a nativeLibraryDir (/data/app/~~<pkg>/lib/arm64/bin/java), que tiene otra
+// extrae a nativeLibraryDir (/data/app/~~<pkg>/lib/arm64/libmcjvmboot.so), que tiene otra
 // etiqueta SELinux (apk_data_file) y no esta bajo W^X.
 //
 // El resto de la JRE (243 MB: libjvm.so, lib/modules, ...) sigue en el data dir del
-// app y se descarga en el primer arranque, como decide CONTEXTO.md seccion 9.2. Se
+// app y se descarga en el primer arranque. Se
 // localiza por dos mecanismos, ambos verificados en hardware:
 //
 //   1. DT_RUNPATH del stub = "$ORIGIN:$ORIGIN/../lib", y LD_LIBRARY_PATH (que el
@@ -756,7 +754,7 @@ Java_com_minicraft_mcserver_runtime_NativeLauncher_killChildNative(JNIEnv* env, 
 // playitd daemon — proceso hermano del servidor JVM.
 //
 // playitd es un PIE dinámico (jniLibs/libplayitd.so) que se execvea desde
-// nativeLibraryDir: evita W^X (CONTEXTO.md §3, tabla de vías de ejecución).
+// nativeLibraryDir: evita W^X (ese directorio no esta bajo la restriccion).
 // El daemon no necesita pipes de IO: escribe a --log-path y habla al cliente
 // IPC por el socket abstracto @playit_ipc. Su PID se guarda en g_playit_pid,
 // que es INDEPENDIENTE de g_child_pid (el servidor JVM).

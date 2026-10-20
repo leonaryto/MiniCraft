@@ -24,7 +24,7 @@ import java.io.File
 /**
  * Mantiene el servidor de Minecraft vivo con la pantalla apagada.
  *
- * Por que `specialUse` y no `dataSync` (ver CONTEXTO.md §6):
+ * Por que `specialUse` y no `dataSync`:
  * `dataSync` esta limitado a 6h/24h desde Android 15 y, sobre todo, su semantica no
  * cubre un servidor de juegos — un servidor no transfiere datos del dispositivo.
  * `specialUse` es lo que corresponde a este caso.
@@ -381,7 +381,7 @@ class MinecraftService : Service() {
     /**
      * Genera/actualiza server.properties con los valores de distancia elegidos
      * por el usuario en ServerConfigSheet. Reduce la carga CPU/tick → menor latencia.
-     * Ver docs/LATENCY-RESEARCH.md §4. NO sobreescribe configuración del jugador;
+     * NO sobreescribe configuración del jugador;
      * solo actualiza los campos de optimización de latencia.
      */
     private fun generateServerProperties(serverDir: File, cfg: com.minicraft.mcserver.ui.ServerConfigSheet.Config) {
