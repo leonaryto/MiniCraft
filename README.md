@@ -49,6 +49,12 @@ The server runs inside a foreground service with a wake lock, so it keeps runnin
 - **Background service**: keeps the server alive while the screen is off.
 - **i18n**: English (default) and Spanish, switchable in Settings.
 
+## Screenshots
+
+| Home | Console | Mods |
+| :---: | :---: | :---: |
+| <img src="screenshots/home.jpg" width="240" alt="Home: server status, resource monitor and version selection"> | <img src="screenshots/console.jpg" width="240" alt="Live console with quick commands"> | <img src="screenshots/mods.jpg" width="240" alt="Modrinth mod search"> |
+
 ## Download and install
 
 Get the latest APK from **[Releases](../../releases)** and sideload it on the device.
