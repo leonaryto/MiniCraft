@@ -13,6 +13,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 import java.util.zip.GZIPInputStream
 
 /**
@@ -24,7 +25,10 @@ import java.util.zip.GZIPInputStream
  * recuperarse desde el propio telefono. Ahora `install` y `start` comprueban
  * que exista y, si falta, la descargan y la instalan solos.
  *
- * COMO (verificado analizando los .deb reales en el host, 2026-10-04):
+ * COMO (verificado analizando los .deb reales en el host, 2026-11-07):
+ *  - Los nombres de los .deb NO se fijan: se resuelven en cada instalacion
+ *    desde `dists/stable/main/binary-aarch64/Packages.gz`. Termux rota las
+ *    versiones del pool y las rutas viejas pasan a 404.
  *  - Cada .deb es un archivo `ar`: cabeceras de 60 bytes por entrada
  *    (nombre 16, tam en 48..58 decimal, relleno de 1 byte a par).
  *    Entradas: debian-binary, control.tar.xz, data.tar.xz.
@@ -32,8 +36,10 @@ import java.util.zip.GZIPInputStream
  *    '0' archivo, '5' dir, '2' symlink — verificado) con prefijo
  *    `./data/data/com.termux/files/usr/`. La JRE vive en
  *    `usr/lib/jvm/java-21-openjdk/` y las libs nativas en `usr/lib/`.
- *  - Los 206 symlinks del tar estan TODOS en `legal/` o `share/doc/`
- *    (licencias): se saltan sin perdida funcional. Ninguno en bin/ ni lib/.
+ *  - Las libs se buscan por patron (p.ej. `libz.so.1.4`); zlib cambia el
+ *    nombre versionado en cada release, asi que no se puede fijar.
+ *  - Los symlinks del tar estan en `legal/` o `share/doc/` (licencias): se
+ *    saltan sin perdida funcional. Ninguno en bin/ ni lib/.
  *  - Los permisos del tar son restrictivos (bin/java 0700, *.so 0600) y no
  *    sirven tal cual: se hace chmod 755 sobre todo el arbol al final.
  *
@@ -44,31 +50,103 @@ object JreProvisioner {
 
     private const val TAG = "MinicraftJre"
 
-    private const val TERMUX_MAIN = "https://packages.termux.dev/apt/termux-main/pool/main"
+    private const val TERMUX_BASE = "https://packages.termux.dev/apt/termux-main/"
+
+    /**
+     * Indice de paquetes de Termux. Se consulta en cada instalacion para no
+     * depender de versiones fijas: Termux rota los .deb del pool y los nombres
+     * viejos pasan a 404.
+     */
+    private const val TERMUX_INDEX =
+        TERMUX_BASE + "dists/stable/main/binary-aarch64/Packages.gz"
 
     /** Prefijo comun de TODO data.tar de Termux. */
     private const val TERMUX_PREFIX = "data/data/com.termux/files/usr/"
 
     /** Ruta de la JRE dentro del data.tar del openjdk. */
+    private const val JDK_PACKAGE = "openjdk-21"
     private const val JDK_SUBDIR = "lib/jvm/java-21-openjdk/"
 
-    /**
-     * Los 5 paquetes: nombre del .deb, subruta del repo y (para las 4 libs
-     * nativas) de donde -> a donde se copian dentro de files/jre.
-     * URLs verificadas contra el indice Packages real (2026-10-04).
-     */
-    private data class Deb(val file: String, val repoPath: String, val extract: Pair<String, String>?)
+    private const val MAX_DOWNLOAD_ATTEMPTS = 3
+    private val INDEX_FIELDS = setOf("Package", "Version", "Filename", "Size", "SHA256")
 
-    private val PACKAGES = listOf(
-        Deb("openjdk-21_21.0.12_aarch64.deb", "o/openjdk-21", null),
-        Deb("zlib_1.3.2_aarch64.deb", "z/zlib",
-            "$TERMUX_PREFIX${"lib/libz.so.1.3.2"}" to "lib/libz.so.1"),
-        Deb("libandroid-shmem_0.7_aarch64.deb", "liba/libandroid-shmem",
-            "$TERMUX_PREFIX${"lib/libandroid-shmem.so"}" to "lib/libandroid-shmem.so"),
-        Deb("libandroid-spawn_0.3_aarch64.deb", "liba/libandroid-spawn",
-            "$TERMUX_PREFIX${"lib/libandroid-spawn.so"}" to "lib/libandroid-spawn.so"),
-        Deb("libc++_30_aarch64.deb", "libc/libc++",
-            "$TERMUX_PREFIX${"lib/libc++_shared.so"}" to "lib/libc++_shared.so")
+    /** Que hacer con el data.tar de cada paquete. */
+    private sealed class Role {
+        /** Extrae el arbol completo del JDK. */
+        object Jdk : Role()
+
+        /** Busca una entrada que case con [source] y la copia a [dest]. */
+        data class Lib(val source: Regex, val dest: String) : Role()
+    }
+
+    private data class PackageSpec(
+        val name: String,
+        val fallbackFilename: String,
+        val fallbackSha256: String,
+        val fallbackSize: Long,
+        val role: Role
+    )
+
+    private data class TermuxPackage(
+        val name: String,
+        val version: String,
+        val filename: String,
+        val sha256: String,
+        val size: Long
+    ) {
+        val url: String get() = TERMUX_BASE + filename
+    }
+
+    /**
+     * Los 5 paquetes que necesita la JRE. Los fallback son las versiones
+     * verificadas el 2026-11-07; el camino normal resuelve el nombre actual
+     * desde el indice de Termux.
+     */
+    private val PACKAGE_SPECS = listOf(
+        PackageSpec(
+            "openjdk-21",
+            "pool/main/o/openjdk-21/openjdk-21_21.0.13-1_aarch64.deb",
+            "f48d68d486a08cdb0993e08e61e6d8d47aba3dba8d9634311eace92f681e0244",
+            106094164L,
+            Role.Jdk
+        ),
+        PackageSpec(
+            "zlib",
+            "pool/main/z/zlib/zlib_1.4_aarch64.deb",
+            "e3027565ae50bcd8ba5113c988b589754ae192c9cc3e6afbe3e4ed7c06b2598e",
+            63780L,
+            Role.Lib(Regex("""^lib/libz\.so\.1(?:\.[0-9]+)*$"""), "lib/libz.so.1")
+        ),
+        PackageSpec(
+            "libandroid-shmem",
+            "pool/main/liba/libandroid-shmem/libandroid-shmem_0.7_aarch64.deb",
+            "0da3a24d558b93c92bcf8d611e0826a99ff96e396b148e6cdf33b47c47c57ff6",
+            7216L,
+            Role.Lib(
+                Regex("""^lib/libandroid-shmem\.so$"""),
+                "lib/libandroid-shmem.so"
+            )
+        ),
+        PackageSpec(
+            "libandroid-spawn",
+            "pool/main/liba/libandroid-spawn/libandroid-spawn_0.3_aarch64.deb",
+            "7988fa788ef48ab5da9660443905a2e4099ac36221739d72f5c39acc644b4d1c",
+            15216L,
+            Role.Lib(
+                Regex("""^lib/libandroid-spawn\.so$"""),
+                "lib/libandroid-spawn.so"
+            )
+        ),
+        PackageSpec(
+            "libc++",
+            "pool/main/libc/libc++/libc++_30_aarch64.deb",
+            "53d0b84a7ba7459024257cb94d5b136fe13ef858567f65a8064b35950799f2ca",
+            341604L,
+            Role.Lib(
+                Regex("""^lib/libc\+\+_shared\.so$"""),
+                "lib/libc++_shared.so"
+            )
+        )
     )
 
     /** Sin estos archivos la JVM no arranca (verificado en el movil). */
@@ -107,17 +185,18 @@ object JreProvisioner {
         }
         root.mkdirs()
 
-        // 1) descargar los 5 debs (el openjdk pesa ~100 MB)
+        // 1) resolver los paquetes ACTUALES y descargar los 5 debs
+        val packages = resolvePackages(progress)
+        val byName = packages.associateBy { it.name }
         var downloaded = 0L
-        for (deb in PACKAGES) {
-            val dest = File(debs, deb.file)
-            if (dest.isFile && dest.length() > 1_000) {
-                progress("  " + Text.s(R.string.jre_already_downloaded, deb.file, (dest.length() / 1048576).toInt()))
+        for (pkg in packages) {
+            val dest = debFile(debs, pkg)
+            if (isDownloaded(dest, pkg)) {
+                progress("  " + Text.s(R.string.jre_already_downloaded, pkg.filename, (dest.length() / 1048576).toInt()))
             } else {
-                progress("  " + Text.s(R.string.jre_downloading, deb.file))
-                if (!download("$TERMUX_MAIN/${deb.repoPath}/${deb.file}", dest, progress)) {
-                    return Text.s(R.string.jre_download_failed, deb.file)
-                }
+                progress("  " + Text.s(R.string.jre_downloading, pkg.filename))
+                val err = download(pkg, dest, progress)
+                if (err != null) return Text.s(R.string.jre_download_failed, pkg.filename, err)
             }
             downloaded += dest.length()
         }
@@ -125,8 +204,9 @@ object JreProvisioner {
 
         // 2) extraer el arbol del JDK
         progress("  " + Text.s(R.string.jre_extracting))
+        val jdk = byName[JDK_PACKAGE] ?: return Text.s(R.string.jre_package_missing, JDK_PACKAGE)
         var extracted = 0
-        findDataTarStream(File(debs, PACKAGES[0].file))?.use { raw ->
+        findDataTarStream(debFile(debs, jdk))?.use { raw ->
             TarReader(raw).use { tar ->
                 val prefix = "$TERMUX_PREFIX$JDK_SUBDIR"
                 while (true) {
@@ -152,30 +232,36 @@ object JreProvisioner {
                     }
                 }
             }
-        } ?: return Text.s(R.string.jre_no_data_tar, PACKAGES[0].file)
+        } ?: return Text.s(R.string.jre_no_data_tar, jdk.filename)
         progress("  " + Text.s(R.string.jre_extracted_done, extracted))
 
         // 3) las 4 libs nativas del linker (van a jre/lib, donde las busca
-        //    LD_LIBRARY_PATH — misma disposicion que la instalacion manual)
-        for (deb in PACKAGES.drop(1)) {
-            val (from, to) = deb.extract ?: continue
-            progress("  " + Text.s(R.string.jre_extract_lib, to.substringAfterLast('/')))
-            findDataTarStream(File(debs, deb.file))?.use { raw ->
+        //    LD_LIBRARY_PATH — misma disposicion que la instalacion manual).
+        //    zlib cambia el nombre del archivo en cada release (libz.so.1.4),
+        //    por eso se busca por patron en vez de por ruta fija.
+        for (spec in PACKAGE_SPECS) {
+            val role = spec.role
+            if (role !is Role.Lib) continue
+            val pkg = byName[spec.name] ?: return Text.s(R.string.jre_package_missing, spec.name)
+            progress("  " + Text.s(R.string.jre_extract_lib, role.dest.substringAfterLast('/')))
+            findDataTarStream(debFile(debs, pkg))?.use { raw ->
                 TarReader(raw).use { tar ->
                     var found = false
                     while (true) {
                         val e = tar.nextHeader() ?: break
                         val clean = e.name.removePrefix("./")
-                        if (clean == from && e.isRegularFile) {
-                            tar.copyBody(e.size, File(root, to))
+                        if (!clean.startsWith(TERMUX_PREFIX)) { tar.skipBody(e.size); continue }
+                        val rel = clean.removePrefix(TERMUX_PREFIX)
+                        if (e.isRegularFile && role.source.matches(rel)) {
+                            tar.copyBody(e.size, File(root, role.dest))
                             found = true
                             break
                         }
                         tar.skipBody(e.size)
                     }
-                    if (!found) return Text.s(R.string.jre_no_entry, from, deb.file)
+                    if (!found) return Text.s(R.string.jre_no_entry, role.source.pattern, pkg.filename)
                 }
-            } ?: return Text.s(R.string.jre_no_data_tar, deb.file)
+            } ?: return Text.s(R.string.jre_no_data_tar, pkg.filename)
         }
 
         // 4) permisos: el tar trae 0600/0700 y asi no ejecuta ni lee
@@ -376,43 +462,279 @@ object JreProvisioner {
         }
     }
 
+    // --------------------------------------------------------- indice Termux
+    /**
+     * Resuelve los 5 paquetes contra el indice actual de Termux. Si el indice
+     * no se puede leer, usa las versiones conocidas como fallback.
+     */
+    private fun resolvePackages(progress: (String) -> Unit): List<TermuxPackage> {
+        val resolved = loadIndex(progress)
+        return PACKAGE_SPECS.map { spec ->
+            resolved?.get(spec.name) ?: run {
+                if (resolved != null) {
+                    progress("  " + Text.s(R.string.jre_index_missing_package, spec.name))
+                }
+                TermuxPackage(
+                    name = spec.name,
+                    version = "fallback",
+                    filename = spec.fallbackFilename,
+                    sha256 = spec.fallbackSha256,
+                    size = spec.fallbackSize
+                )
+            }
+        }
+    }
+
+    /**
+     * Lee Packages.gz en streaming y devuelve solo los paquetes que usa la app.
+     * El indice cambia cuando Termux publica una version nueva; por eso no se
+     * fija ni el numero de version ni la ruta del .deb.
+     */
+    private fun loadIndex(progress: (String) -> Unit): Map<String, TermuxPackage>? {
+        val conn = URL(TERMUX_INDEX).openConnection() as HttpURLConnection
+        conn.connectTimeout = 30_000
+        conn.readTimeout = 60_000
+        conn.setRequestProperty("User-Agent", "MiniCraft/1.0.1 (Android)")
+        try {
+            val code = conn.responseCode
+            if (code !in 200..299) {
+                Log.e(TAG, "HTTP $code en $TERMUX_INDEX")
+                progress("  " + Text.s(R.string.jre_index_unavailable, "HTTP $code"))
+                return null
+            }
+
+            val result = LinkedHashMap<String, TermuxPackage>()
+            GZIPInputStream(conn.inputStream).bufferedReader().useLines { lines ->
+                var fields = HashMap<String, String>()
+
+                fun flushStanza() {
+                    val name = fields["Package"] ?: return
+                    if (PACKAGE_SPECS.none { it.name == name }) return
+                    val filename = fields["Filename"] ?: return
+                    if (!isSafeFilename(filename)) return
+                    val sha = (fields["SHA256"] ?: "").lowercase()
+                    if (!sha.matches(Regex("^[0-9a-f]{64}$"))) return
+                    val size = fields["Size"]?.toLongOrNull() ?: 0L
+                    result[name] = TermuxPackage(
+                        name = name,
+                        version = fields["Version"].orEmpty(),
+                        filename = filename,
+                        sha256 = sha,
+                        size = size
+                    )
+                }
+
+                for (line in lines) {
+                    if (line.isBlank()) {
+                        flushStanza()
+                        fields = HashMap()
+                        if (result.size == PACKAGE_SPECS.size) break
+                        continue
+                    }
+                    if (line.startsWith(" ")) continue // continuacion de un campo
+                    val sep = line.indexOf(':')
+                    if (sep <= 0) continue
+                    val key = line.substring(0, sep)
+                    if (key in INDEX_FIELDS) fields[key] = line.substring(sep + 1).trim()
+                }
+                if (result.size < PACKAGE_SPECS.size) flushStanza()
+            }
+            return result
+        } catch (t: Throwable) {
+            Log.e(TAG, "no se pudo leer el indice de Termux: ${t.message}")
+            progress("  " + Text.s(R.string.jre_index_unavailable, t.message ?: t::class.java.simpleName))
+            return null
+        } finally {
+            conn.disconnect()
+        }
+    }
+
+    /** Solo aceptamos rutas del pool de Termux para aarch64. */
+    private fun isSafeFilename(filename: String): Boolean =
+        filename.startsWith("pool/main/") &&
+            filename.endsWith("_aarch64.deb") &&
+            !filename.contains("..") &&
+            !filename.contains('\\')
+
+    private fun debFile(dir: File, pkg: TermuxPackage): File =
+        File(dir, File(pkg.filename).name)
+
+    /** Cache valida: tamano y SHA-256 del indice (si estan disponibles). */
+    private fun isDownloaded(dest: File, pkg: TermuxPackage): Boolean {
+        if (!dest.isFile || dest.length() <= 1_000) return false
+        if (pkg.size > 0 && dest.length() != pkg.size) return false
+        if (pkg.sha256.isNotBlank() && !sha256(dest).equals(pkg.sha256, ignoreCase = true)) {
+            return false
+        }
+        return true
+    }
+
     // -------------------------------------------------------------- descarga
-    /** HTTP GET a archivo con progreso cada 10 %. true si se completo. */
-    private fun download(url: String, dest: File, progress: (String) -> Unit): Boolean = try {
-        val conn = URL(url).openConnection() as HttpURLConnection
+    private sealed class DownloadOutcome {
+        object Success : DownloadOutcome()
+        data class Failure(val reason: String, val retryable: Boolean) : DownloadOutcome()
+    }
+
+    /**
+     * Descarga [pkg] a [dest] con reintentos. Devuelve null si se completo, o
+     * el motivo real del fallo (HTTP 404, timeout, checksum, etc.).
+     */
+    private fun download(pkg: TermuxPackage, dest: File, progress: (String) -> Unit): String? {
+        if (dest.exists()) dest.delete()
+        val tmp = File(dest.absolutePath + ".part")
+        var lastError = "unknown error"
+
+        for (attempt in 1..MAX_DOWNLOAD_ATTEMPTS) {
+            when (val outcome = downloadOnce(pkg, dest, tmp, progress)) {
+                is DownloadOutcome.Success -> return null
+                is DownloadOutcome.Failure -> {
+                    lastError = outcome.reason
+                    if (!outcome.retryable || attempt >= MAX_DOWNLOAD_ATTEMPTS) {
+                        return lastError
+                    }
+                    progress(
+                        "    " + Text.s(
+                            R.string.jre_retrying,
+                            pkg.filename,
+                            attempt + 1,
+                            MAX_DOWNLOAD_ATTEMPTS,
+                            lastError
+                        )
+                    )
+                    backoff(attempt)
+                }
+            }
+        }
+        return lastError
+    }
+
+    private fun downloadOnce(
+        pkg: TermuxPackage,
+        dest: File,
+        tmp: File,
+        progress: (String) -> Unit
+    ): DownloadOutcome {
+        val conn = try {
+            URL(pkg.url).openConnection() as HttpURLConnection
+        } catch (t: Throwable) {
+            return DownloadOutcome.Failure(ioReason(t), retryable = true)
+        }
         conn.connectTimeout = 30_000
         conn.readTimeout = 120_000
-        if (conn.responseCode !in 200..299) {
-            Log.e(TAG, "HTTP ${conn.responseCode} en $url")
-            false
-        } else {
+        conn.setRequestProperty("User-Agent", "MiniCraft/1.0.1 (Android)")
+        conn.setRequestProperty("Accept-Encoding", "identity")
+
+        try {
+            val code = try {
+                conn.responseCode
+            } catch (t: Throwable) {
+                return DownloadOutcome.Failure(ioReason(t), retryable = true)
+            }
+            if (code !in 200..299) {
+                Log.e(TAG, "HTTP $code en ${pkg.url}")
+                return DownloadOutcome.Failure(
+                    "HTTP $code",
+                    retryable = code in 500..599 || code == 408 || code == 429
+                )
+            }
+
             val total = conn.contentLengthLong
-            val tmp = File(dest.absolutePath + ".part")
+            tmp.delete()
+            var done = 0L
             var lastStep = -1L
-            BufferedInputStream(conn.inputStream).use { ins ->
-                FileOutputStream(tmp).use { outs ->
-                    val b = ByteArray(64 * 1024)
-                    var done = 0L
-                    while (true) {
-                        val n = ins.read(b)
-                        if (n <= 0) break
-                        outs.write(b, 0, n)
-                        done += n
-                        if (total > 0) {
-                            val step = done * 10 / total
-                            if (step != lastStep) {
-                                lastStep = step
-                                progress("    " + Text.s(R.string.jre_downloading_pct, dest.name, (done * 100 / total).toInt(), (done / 1048576).toInt()))
+            try {
+                BufferedInputStream(conn.inputStream).use { ins ->
+                    FileOutputStream(tmp).use { outs ->
+                        val b = ByteArray(64 * 1024)
+                        while (true) {
+                            val n = ins.read(b)
+                            if (n <= 0) break
+                            outs.write(b, 0, n)
+                            done += n
+                            if (total > 0) {
+                                val step = done * 10 / total
+                                if (step != lastStep) {
+                                    lastStep = step
+                                    progress(
+                                        "    " + Text.s(
+                                            R.string.jre_downloading_pct,
+                                            pkg.filename,
+                                            (done * 100 / total).toInt(),
+                                            (done / 1048576).toInt()
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
                 }
+            } catch (t: Throwable) {
+                tmp.delete()
+                return DownloadOutcome.Failure(ioReason(t), retryable = true)
             }
+
+            if (total > 0 && done != total) {
+                tmp.delete()
+                return DownloadOutcome.Failure(
+                    "size mismatch (expected $total, got $done)",
+                    retryable = true
+                )
+            }
+            if (pkg.size > 0 && tmp.length() != pkg.size) {
+                val got = tmp.length()
+                tmp.delete()
+                return DownloadOutcome.Failure(
+                    "size mismatch (expected ${pkg.size}, got $got)",
+                    retryable = true
+                )
+            }
+            if (pkg.sha256.isNotBlank()) {
+                val actual = sha256(tmp)
+                if (!actual.equals(pkg.sha256, ignoreCase = true)) {
+                    tmp.delete()
+                    return DownloadOutcome.Failure("checksum mismatch", retryable = true)
+                }
+            }
+
+            if (tmp.renameTo(dest)) {
+                Log.i(TAG, "descargado ${pkg.filename} (${done / 1048576} MB)")
+                return DownloadOutcome.Success
+            }
+            return try {
+                tmp.copyTo(dest, overwrite = true)
+                tmp.delete()
+                Log.i(TAG, "descargado ${pkg.filename} (${done / 1048576} MB)")
+                DownloadOutcome.Success
+            } catch (t: Throwable) {
+                tmp.delete()
+                DownloadOutcome.Failure("could not save file: ${t.message}", retryable = true)
+            }
+        } finally {
             conn.disconnect()
-            if (tmp.renameTo(dest)) true else { tmp.delete(); false }
         }
-    } catch (t: Throwable) {
-        Log.e(TAG, "descarga de $url fallo: ${t.message}")
-        false
+    }
+
+    private fun ioReason(t: Throwable): String =
+        "${t::class.java.simpleName}: ${t.message ?: "I/O error"}"
+
+    private fun backoff(attempt: Int) {
+        try {
+            Thread.sleep(1_000L * attempt)
+        } catch (_: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+    }
+
+    private fun sha256(file: File): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { ins ->
+            val b = ByteArray(64 * 1024)
+            while (true) {
+                val n = ins.read(b)
+                if (n <= 0) break
+                md.update(b, 0, n)
+            }
+        }
+        return md.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) }
     }
 }

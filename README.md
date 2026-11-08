@@ -6,7 +6,7 @@
 
 Turn an Android phone into a real **Minecraft Java Edition** server. Minicraft installs and runs the official server software, manages mods and worlds, shows a live console and resource usage, and can expose the server through a [playit.gg](https://playit.gg) tunnel so friends can join without opening router ports.
 
-> **Version 1.0.0.** Free and open source under **GPL-3.0-or-later**.
+> **Version 1.0.1.** Free and open source under **GPL-3.0-or-later**.
 
 **Source:** [github.com/leonaryto/MiniCraft](https://github.com/leonaryto/MiniCraft) · **Issues:** [report a bug](https://github.com/leonaryto/MiniCraft/issues)
 

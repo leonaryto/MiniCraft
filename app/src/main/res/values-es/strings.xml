@@ -326,7 +326,11 @@
     <string name="jre_incomplete">JRE incompleta de una corrida anterior; se reinstala</string>
     <string name="jre_already_downloaded">%1$s ya estaba descargado (%2$d MB)</string>
     <string name="jre_downloading">descargando %1$s…</string>
-    <string name="jre_download_failed">no se pudo descargar %1$s (¿sin conexión?)</string>
+    <string name="jre_download_failed">no se pudo descargar %1$s: %2$s</string>
+    <string name="jre_retrying">reintentando %1$s (intento %2$d de %3$d): %4$s</string>
+    <string name="jre_index_unavailable">índice de paquetes de Termux no disponible (%1$s); usando versiones conocidas</string>
+    <string name="jre_index_missing_package">%1$s no está en el índice de Termux; usando una versión conocida</string>
+    <string name="jre_package_missing">falta el paquete requerido %1$s</string>
     <string name="jre_download_complete">descarga completa (%1$d MB)</string>
     <string name="jre_extracting">extrayendo la JRE de openjdk-21 (243 MB, tarda)…</string>
     <string name="jre_extracted_files">%1$d archivos extraídos…</string>
